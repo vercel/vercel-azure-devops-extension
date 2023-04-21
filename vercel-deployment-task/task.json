@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "37f7b648-3029-4ad8-afde-5bfce24b9695",
+  "name": "vercel-deployment-task",
+  "friendlyName": "Vercel Deployment Task",
+  "description": "An Azure Pipelines Task Extension for automatically deploying to Vercel",
+  "category": "Utility",
+  "author": "Ethan Arrowood",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 1
+  },
+  "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
+  "inputs": [
+    {
+      "name": "vercelProject",
+      "type": "string",
+      "label": "Vercel Project",
+      "required": true,
+      "helpMarkDown": "The name of your Vercel Project"
+    },
+    {
+      "name": "vercelToken",
+      "type": "string",
+      "label": "Vercel Token",
+      "required": true,
+      "helpMarkDown": "A personal access token with deploy permissions for your Vercel Project (https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token)"
+    }
+  ],
+  "execution": {
+    "Node16": {
+      "target": "dist/index.js"
+    }
+  }
+}
