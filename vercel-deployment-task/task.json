@@ -5,7 +5,7 @@
   "friendlyName": "Vercel Deployment Task",
   "description": "An Azure Pipelines Task Extension for automatically deploying to Vercel",
   "category": "Utility",
-  "author": "Ethan Arrowood",
+  "author": "Vercel",
   "version": {
     "Major": 0,
     "Minor": 0,
@@ -26,6 +26,13 @@
       "label": "Vercel Token",
       "required": true,
       "helpMarkDown": "A personal access token with deploy permissions for your Vercel Project (https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token)"
+    },
+    {
+        "name": "production",
+        "type": "boolean",
+        "label": "Deploy to Production",
+        "required": false,
+        "helpMarkDown": "Should the task deploy to production? Defaults to false"
     }
   ],
   "execution": {
