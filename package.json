@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "name": "vercel-azure-devops-extension",
+  "scripts": {
+    "format": "prettier ."
+  },
+  "devDependencies": {
+    "prettier": "2.8.8"
+  }
+}

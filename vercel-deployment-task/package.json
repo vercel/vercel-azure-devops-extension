@@ -1,9 +1,8 @@
 {
-  "name": "vercel-deployment-task",
   "private": true,
+  "name": "vercel-deployment-task",
   "scripts": {
     "build": "tsc --project ./tsconfig.json",
-    "format": "prettier .",
     "pretest": "tsc --project ./tsconfig.test.json",
     "test": "tap --no-coverage test-out/test/index.test.js"
   },
@@ -18,7 +17,6 @@
   "devDependencies": {
     "@types/node": "16.18.24",
     "@types/tap": "15.0.8",
-    "prettier": "2.8.7",
     "tap": "16.3.4",
     "typescript": "5.0.4"
   }
