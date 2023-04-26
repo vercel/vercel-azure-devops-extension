@@ -1,0 +1,11 @@
+name: 'Build and Publish Vercel Deployment Task Extension'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  runs-on: "ubuntu-latest"

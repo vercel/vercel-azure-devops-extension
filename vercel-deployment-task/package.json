@@ -2,7 +2,7 @@
   "name": "vercel-deployment-task",
   "private": true,
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --outdir=dist",
+    "build": "tsc --project ./tsconfig.json",
     "format": "prettier .",
     "pretest": "tsc --project ./tsconfig.test.json",
     "test": "tap --no-coverage test-out/test/index.test.js"
@@ -12,12 +12,13 @@
     "node": "^16.0.0"
   },
   "dependencies": {
-    "azure-pipelines-task-lib": "4.3.1"
+    "azure-devops-node-api": "12.0.0",
+    "azure-pipelines-task-lib": "4.3.1",
+    "undici": "5.22.0"
   },
   "devDependencies": {
     "@types/node": "16.18.24",
     "@types/tap": "15.0.8",
-    "esbuild": "0.17.17",
     "prettier": "2.8.7",
     "tap": "16.3.4",
     "typescript": "5.0.4"
