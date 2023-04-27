@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
-  "id": "6d4841fe-62c6-48e5-aaed-f01871c4216b",
+  "id": "7452306c-c0c7-4e93-8691-a364394d1229",
   "name": "vercel-deployment-task",
   "friendlyName": "Vercel Deployment Task",
   "description": "An Azure Pipelines Task Extension for automatically deploying to Vercel",
@@ -11,7 +11,7 @@
   "version": {
     "Major": 0,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 12
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [

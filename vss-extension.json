@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "vercel-deployment-extension",
   "name": "Vercel Deployment Extension",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "publisher": "Vercel",
   "targets": [
     {
@@ -30,5 +30,15 @@
     "Deployment",
     "Next.js",
     "Frontend Cloud"
+  ],
+  "contributions": [
+    {
+      "id": "vercel-deployment-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "vercel-deployment-task"
+      }
+    }
   ]
 }
