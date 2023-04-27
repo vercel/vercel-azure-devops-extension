@@ -42,4 +42,6 @@ jobs:
         run: pnpm install
 
       - name: Build and Publish
-        run: pnpm -C scripts publish
+        run: pnpm -C scripts build-and-publish
+
+      - name: 

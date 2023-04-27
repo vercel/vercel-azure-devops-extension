@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "node build-and-publish.js",
-    "publish": "node build-and-publish.js --publish"
+    "build-and-publish": "node build-and-publish.js --publish"
   },
   "dependencies": {
     "execa": "7.1.1",

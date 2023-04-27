@@ -11,10 +11,11 @@ const taskDir = join(root, "vercel-deployment-task-source");
 await $$`pnpm -C ${taskDir} build`;
 
 const taskFilePath = join(taskDir, "task.json");
-const taskFileData = await readFile(taskFilePath);
-const taskFileJSON = JSON.parse(taskFileData);
-taskFileJSON.version.Patch = taskFileJSON.version.Patch + 1;
-await writeFile(taskFilePath, JSON.stringify(taskFileJSON, undefined, 2));
+// removing for now - script will publish currently committed versions
+// const taskFileData = await readFile(taskFilePath);
+// const taskFileJSON = JSON.parse(taskFileData);
+// taskFileJSON.version.Patch = taskFileJSON.version.Patch + 1;
+// await writeFile(taskFilePath, JSON.stringify(taskFileJSON, undefined, 2));
 
 const out = join(root, "vercel-deployment-task");
 
@@ -34,6 +35,6 @@ const pat = process.env.AZURE_TOKEN;
 
 await $$`tfx extension ${
   publish ? ["publish", "--token", pat, "--no-wait-validation"] : "create"
-} --manfiest-globs vss-extension.json`;
+} --manifest-globs vss-extension.json`;
 
 await rm(out, { recursive: true, force: true });
