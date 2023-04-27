@@ -43,5 +43,5 @@ jobs:
 
       - name: Build and Publish
         run: pnpm -C scripts build-and-publish
-
-      - name:
+        env:
+          AZURE_TOKEN: ${{ secrets.AZURE_TOKEN }}
