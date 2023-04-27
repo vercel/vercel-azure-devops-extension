@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "scripts",
+  "type": "module",
+  "scripts": {
+    "build": "node build-and-publish.js",
+    "build-and-publish": "node build-and-publish.js --publish"
+  },
+  "dependencies": {
+    "execa": "7.1.1",
+    "tfx-cli": "0.14.0"
+  }
+}

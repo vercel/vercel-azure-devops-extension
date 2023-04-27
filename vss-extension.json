@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json.schemastore.org/vss-extension",
+  "manifestVersion": 1,
+  "id": "vercel-deployment-extension",
+  "name": "Vercel Deployment Extension",
+  "version": "0.0.1",
+  "publisher": "Vercel",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "description": "An Azure Pipelines Task Extension for automatically deploying to Vercel",
+  "categories": ["Azure Pipelines"],
+  "files": [
+    {
+      "path": "vercel-deployment-task"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/vercel/vercel-azure-devops-extension"
+  },
+  "icons": {
+    "default": "./icons/vercel-icon-dark.png"
+  },
+  "tags": [
+    "Azure DevOps Extensions",
+    "Vercel",
+    "Deployment",
+    "Next.js",
+    "Frontend Cloud"
+  ],
+  "contributions": [
+    {
+      "id": "vercel-deployment-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "vercel-deployment-task"
+      }
+    }
+  ]
+}

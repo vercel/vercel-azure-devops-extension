@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "name": "vercel-deployment-task",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.json",
+    "pretest": "tsc --project ./tsconfig.test.json",
+    "test": "tap --no-coverage test-out/test/index.test.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^16.0.0"
+  },
+  "dependencies": {
+    "azure-devops-node-api": "12.0.0",
+    "azure-pipelines-task-lib": "4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "16.18.24",
+    "@types/tap": "15.0.8",
+    "tap": "16.3.4",
+    "typescript": "5.0.4"
+  }
+}

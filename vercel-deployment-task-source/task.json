@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "7452306c-c0c7-4e93-8691-a364394d1229",
+  "name": "vercel-deployment-task",
+  "friendlyName": "Vercel Deployment Task",
+  "description": "An Azure Pipelines Task Extension for automatically deploying to Vercel",
+  "helpUrl": "https://github.com/vercel/vercel-azure-devops-extension",
+  "helpMarkDown": "Something not working? Get help here: https://vercel.com/help",
+  "category": "Azure Pipelines",
+  "author": "Vercel",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 1
+  },
+  "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
+  "inputs": [
+    {
+      "name": "vercelProject",
+      "type": "string",
+      "label": "Vercel Project",
+      "required": true,
+      "helpMarkDown": "The name of your Vercel Project"
+    },
+    {
+      "name": "vercelToken",
+      "type": "string",
+      "label": "Vercel Personal Access Token",
+      "required": true,
+      "helpMarkDown": "A Vercel personal access token with deploy permissions for your Vercel Project (https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token)"
+    },
+    {
+      "name": "production",
+      "type": "boolean",
+      "label": "Deploy to Production",
+      "required": false,
+      "helpMarkDown": "Should the task deploy to production? Defaults to false"
+    },
+    {
+      "name": "azureToken",
+      "type": "string",
+      "label": "Azure Personal Access Token",
+      "required": true,
+      "helpMarkDown": "An Azure personal access token with the Git 'PullRequestContribute' permission for your Azure DevOps Organization (https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)"
+    }
+  ],
+  "execution": {
+    "Node16": {
+      "target": "dist/index.js"
+    }
+  }
+}

@@ -1,0 +1,3 @@
+packages:
+  - "vercel-deployment-task-source"
+  - "scripts"
