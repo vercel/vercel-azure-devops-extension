@@ -1,3 +1,3 @@
 package-lock.json
-vercel-deployment-task/dist
-vercel-deployment-task/test-out
+vercel-deployment-task-source/dist
+vercel-deployment-task-source/test-out
