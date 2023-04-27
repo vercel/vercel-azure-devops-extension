@@ -30,10 +30,10 @@ await $$`npm -C ${out} install --production --package-lock=false`;
 const args = process.argv.slice(2);
 const publish = args[0] === "--publish";
 
-const pat = "kytpz75rpwnfegnfeg7vhecpt7hb5mmaef67ktuffebvodobme6a";
+const pat = process.env.AZURE_TOKEN;
 
 await $$`tfx extension ${
   publish ? ["publish", "--token", pat, "--no-wait-validation"] : "create"
-} --rev-version --manfiest-globs vss-extension.json`;
+} --manfiest-globs vss-extension.json`;
 
 await rm(out, { recursive: true, force: true });
