@@ -6,6 +6,9 @@ This extension contains the [Vercel Deployment Task] for automatically deploying
   - [Extension Set Up](#extension-set-up)
   - [Basic Pipeline Set Up](#basic-pipeline-set-up)
   - [Full Featured Pipeline Set Up](#full-featured-pipeline-set-up)
+  - [Extension Reference](#extension-reference)
+    - [Task: `vercel-deployment-task`](#task-vercel-deployment-task)
+      - [Properties](#properties)
   - [Azure PAT Set Up](#azure-pat-set-up)
   - [Azure Build Policy Set Up](#azure-build-policy-set-up)
 
@@ -76,6 +79,47 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
    condition: or(eq(variables.isMain, true), eq(variables['Build.Reason'], 'PullRequest'))
    ```
 5. Push these changes to the repository, and set a [Build Policy]() for the `main` branch.
+
+## Extension Reference
+
+### Task: `vercel-deployment-task`
+
+#### Properties
+
+- `vercelProject`
+
+    The name of your Vercel Project
+
+    Type: `string`
+
+    Required: `true`
+
+- `vercelToken`
+
+    A Vercel personal access token with deploy permissions for your Vercel Project. [Guide](https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token)
+
+    Type: `string`
+
+    Required: `true`
+
+- `production`
+
+    Should the task deploy to production?
+
+    Type: `boolean`
+
+    Default: `false`
+
+    Required: `false`
+
+- `azureToken`
+
+    An Azure personal access token with the Git 'PullRequestContribute' permission for your Azure DevOps Organization. [Guide](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)
+
+    Type: `string`
+
+    Required: `true`
+
 ## Azure PAT Set Up
 
 1. Go to [https://dev.azure.com](https://dev.azure.com) and click on the settings icon in the top right.
