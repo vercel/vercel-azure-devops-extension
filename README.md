@@ -15,7 +15,7 @@ This extension contains the [Vercel Deployment Task] for automatically deploying
 ## Extension Set Up
 
 1. Create a Vercel Project
-1. Create a Vercel Personal Access Token with permissions to deploy the project created on step 1 (see the [Vercel PAT Set Up]() guide for more information)
+1. Create a Vercel Personal Access Token with permissions to deploy the project created on step 1 (see the [Vercel PAT Set Up](https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token) guide for more information)
 1. Create a Azure DevOps Personal Access Token with permissions to Read/Write Pull Request threads (see the [Azure PAT set up](#azure-pat-set-up) guide for more information)
 2. Store these tokens as secret variables in your preferred methodology. Azure recommends using the [UI, Variables Groups, or Azure Key Vault](https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables). Whichever methodology you use, make sure it is accessible from Azure Pipelines.
 3. Navigate to the [Vercel Deployment Extension](https://marketplace.visualstudio.com/items?itemName=Vercel.vercel-deployment-extension) Visual Studio Marketplace page and add the extension to your organization.
@@ -78,7 +78,7 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
      # ...
    condition: or(eq(variables.isMain, true), eq(variables['Build.Reason'], 'PullRequest'))
    ```
-5. Push these changes to the repository, and set a [Build Policy]() for the `main` branch.
+5. Push these changes to the repository, and set a [Build Policy](#azure-build-policy-set-up) for the `main` branch.
 
 ## Extension Reference
 
@@ -104,7 +104,7 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
 
 - `production`
 
-    Should the task deploy to production?
+    Should the task deploy to production? When omitted, or set to `false`, the task will create _preview_ deployments.
 
     Type: `boolean`
 
@@ -151,6 +151,7 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
    ![Build Validation](images/build-policy/6-build-validation.png)
 7. Select the pipeline previously created
    ![Select Build Pipeline](images/build-policy/7-select-build-pipeline.png)
+   > Keep the policy marked as **Required** so that commits directly to `main` are prevented.
 8. Finally, save the new validation policy
    ![Save Build Policy](images/build-policy/8-save-build-policy.png)
 9. Create a pull request to the `main` branch, and if everything is set up correctly, the pipeline will run and comment back on the PR the deployment URL 🎉
