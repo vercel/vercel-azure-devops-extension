@@ -1,3 +1,4 @@
 package-lock.json
+pnpm-lock.yaml
 vercel-deployment-task-source/dist
 vercel-deployment-task-source/test-out
