@@ -122,36 +122,64 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
 
 ## Azure PAT Set Up
 
-1. Go to [https://dev.azure.com](https://dev.azure.com) and click on the settings icon in the top right.
+1. ### Go to [https://dev.azure.com](https://dev.azure.com) and click on the settings icon in the top right.
+
     ![Azure DevOps Landing Page](images/azure-pat/1-user-settings.png)
-2. Click on the *Personal access tokens* menu option
+
+3. ### Click on the *Personal access tokens* menu option
+
     ![Azure DevOps Setting Button](images/azure-pat/2-personal-access-tokens.png)
-3. Click on *New Token*
+
+5. ### Click on *New Token*
+
     ![Azure DevOps New Token Button](images/azure-pat/3-new-token.png)
-4. After filling in the basic token information like name, organization, and expiration, click on the *Show all scopes* button at the bottom of the prompt
+
+7. ### After filling in the basic token information like name, organization, and expiration, click on the *Show all scopes* button at the bottom of the prompt
+   
     ![Azure DevOps Show All Scopes](images/azure-pat/4-show-all-scopes.png)
-5. Then, within the scopes list, scroll until _Pull Request Threads_, and select the _Read & Write_ toggle.
+  
+8. ### Then, within the scopes list, scroll until _Pull Request Threads_, and select the _Read & Write_ toggle.
+
     ![Azure DevOps Pull Request Threads permission](images/azure-pat/5-pull-request-threads.png)
-6. Click _Create_, and don't forget to copy the token as once you exit the prompt it will not be retrievable.
+
+9. ### Click _Create_, and don't forget to copy the token as once you exit the prompt it will not be retrievable.
+
     ![Azure DevOps PAT Create](images/azure-pat/6-create.png)
 
 ## Azure Build Policy Set Up
 
-1. Navigate to the Azure DevOps organization Overview page. Click on **Project Settings** in the lower left corner.
+1. ### Navigate to the Azure DevOps organization Overview page. Click on **Project Settings** in the lower left corner.
+   
    ![Project Settings](images/build-policy/1-project-settings.png)
-2. In the **Project Settings** list on the left, scroll down and click on the `Repositories` option
+  
+2. ### In the **Project Settings** list on the left, scroll down and click on the `Repositories` option
+   
    ![Repositories](images/build-policy/2-repositories.png)
-3. Select the repository
+
+3. ### Select the repository
+   
    ![Select Repo](images/build-policy/3-select-repo.png)
-4. On the right side, select **Policies**
+
+4. ### On the right side, select **Policies**
+   
    ![Select Policies](images/build-policy/4-select-policies.png)
-5. Scroll down to **Branch Policies**, and select the `main` branch
+   
+5. ### Scroll down to **Branch Policies**, and select the `main` branch
+   
    ![Main Branch](images/build-policy/5-main-branch.png)
-6. Scroll down to **Build Validation**, and click on the `+` button to create a new validation policy.
+
+6. ### Scroll down to **Build Validation**, and click on the `+` button to create a new validation policy.
+   
    ![Build Validation](images/build-policy/6-build-validation.png)
-7. Select the pipeline previously created
+
+7. ### Select the pipeline previously created
+8. 
    ![Select Build Pipeline](images/build-policy/7-select-build-pipeline.png)
+
    > Keep the policy marked as **Required** so that commits directly to `main` are prevented.
-8. Finally, save the new validation policy
+
+9.  ### Finally, save the new validation policy
+    
    ![Save Build Policy](images/build-policy/8-save-build-policy.png)
-9. Create a pull request to the `main` branch, and if everything is set up correctly, the pipeline will run and comment back on the PR the deployment URL 🎉
+
+10. ### Create a pull request to the `main` branch, and if everything is set up correctly, the pipeline will run and comment back on the PR the deployment URL 🎉
