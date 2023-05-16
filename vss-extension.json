@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "vercel-deployment-extension",
   "name": "Vercel Deployment Extension",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publisher": "Vercel",
   "targets": [
     {
@@ -20,6 +20,10 @@
   "files": [
     {
       "path": "vercel-deployment-task"
+    },
+    {
+      "path": "images",
+      "addressable": true
     }
   ],
   "repository": {
