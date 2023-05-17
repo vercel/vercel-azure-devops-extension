@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+  "id": "3a06b896-099c-4d26-b61f-93b5e5189d7b",
+  "name": "vercel-azdo-pr-comment-task",
+  "friendlyName": "Vercel Azure DevOps Pull Request Comment Task",
+  "description": "An Azure Pipelines Task Extension for commenting on pull requests that trigger Vercel builds",
+  "helpUrl": "https://github.com/vercel/vercel-azure-devops-extension",
+  "helpMarkDown": "Something not working? Get help here: https://vercel.com/help",
+  "category": "Azure Pipelines",
+  "author": "Vercel",
+  "version": {
+    "Major": 0,
+    "Minor": 0,
+    "Patch": 1
+  },
+  "instanceNameFormat": "Commenting on Pull Request",
+  "inputs": [
+    {
+      "name": "azureToken",
+      "type": "string",
+      "label": "Azure Personal Access Token",
+      "required": true,
+      "helpMarkDown": "An Azure personal access token with the Git 'PullRequestContribute' permission for your Azure DevOps Organization (https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)"
+    },
+    {
+      "name": "deploymentTaskMessage",
+      "type": "string",
+      "label": "Deployment Task Message (from Vercel Deployment Task)",
+      "required": true,
+      "helpMarkDown": "The message to be commented on the Pull Request. Generally is created by the Vercel Deployment Task."
+    }
+  ],
+  "execution": {
+    "Node16": {
+      "target": "dist/index.js"
+    }
+  }
+}

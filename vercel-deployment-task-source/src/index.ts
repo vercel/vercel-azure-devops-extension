@@ -7,6 +7,7 @@ import {
   tool,
   setResourcePath,
   getVariable,
+  setVariable
 } from "azure-pipelines-task-lib";
 import path from "path";
 import { getPersonalAccessTokenHandler, WebApi } from "azure-devops-node-api";
@@ -70,39 +71,12 @@ async function run() {
         ? `Successfully deployed to ${stdout}`
         : `Failed to deploy ${vercelProject}.\n\nError:\n${stderr}`;
 
-    const buildReason = getVariable("Build.Reason");
-    if (buildReason === "PullRequest") {
-      const token = getInput("azureToken", true)!;
+    setVariable('deploymentTaskMessage', message);
 
-      const organizationURI = getVariable("System.CollectionUri")!;
-      const repositoryId = getVariable("Build.Repository.ID")!;
-      const pullRequestId = getVariable("System.PullRequest.PullRequestId")!;
-      const project = getVariable("System.TeamProject")!;
-
-      const authHandler = getPersonalAccessTokenHandler(token);
-      const connection = new WebApi(organizationURI, authHandler);
-      const gitClient = await connection.getGitApi();
-
-      gitClient.createThread(
-        {
-          comments: [
-            {
-              content: message,
-              commentType: CommentType.System,
-            },
-          ],
-          status: CommentThreadStatus.Active,
-        },
-        repositoryId,
-        parseInt(pullRequestId),
-        project
+    if (code !== 0) {
+      throw new Error(
+        `vercel deploy failed with exit code ${code}. Error: ${stderr}`
       );
-    } else {
-      if (code !== 0) {
-        throw new Error(
-          `vercel deploy failed with exit code ${code}. Error: ${stderr}`
-        );
-      }
     }
 
     console.log(message);

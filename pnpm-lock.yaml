@@ -17,6 +17,22 @@ importers:
         specifier: 0.14.0
         version: 0.14.0
 
+  vercel-azdo-pr-comment-task-source:
+    dependencies:
+      azure-devops-node-api:
+        specifier: 12.0.0
+        version: 12.0.0
+      azure-pipelines-task-lib:
+        specifier: 4.3.1
+        version: 4.3.1
+    devDependencies:
+      '@types/node':
+        specifier: 16.18.24
+        version: 16.18.24
+      typescript:
+        specifier: 5.0.4
+        version: 5.0.4
+
   vercel-deployment-task-source:
     dependencies:
       azure-devops-node-api:

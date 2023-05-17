@@ -1,6 +1,6 @@
 # Vercel Azure DevOps Extension
 
-This extension contains the [Vercel Deployment Task] for automatically deploying your Azure DevOps project to Vercel. It contains other useful features like automatic Pull Request comments and a template pipeline for quick set up.
+This extension contains the Vercel Deployment Task for automatically deploying your Azure DevOps project to Vercel. It contains other useful features like automatic Pull Request comments and a template pipeline for quick set up.
 
 - [Vercel Azure DevOps Extension](#vercel-azure-devops-extension)
   - [Extension Set Up](#extension-set-up)
@@ -115,9 +115,29 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
 
   Required: `false`
 
+#### Outputs
+
+- `deploymentTaskMessage`
+
+  The output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task.
+
+  Type: `string`
+
+### Task: `vercel-azdo-pr-comment-task`
+
+#### Properties
+
 - `azureToken`
 
   An Azure personal access token with the Git 'PullRequestContribute' permission for your Azure DevOps Organization. [Guide](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)
+
+  Type: `string`
+
+  Required: `true`
+
+- `deploymentTaskMessage`
+
+  The message to be commented on the Pull Request. Generally is created by the Vercel Deployment Task.
 
   Type: `string`
 

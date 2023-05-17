@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "vercel-azdo-pr-comment-task",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.json"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^16.0.0"
+  },
+  "dependencies": {
+    "azure-devops-node-api": "12.0.0",
+    "azure-pipelines-task-lib": "4.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "16.18.24",
+    "typescript": "5.0.4"
+  }
+}

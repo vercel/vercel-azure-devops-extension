@@ -22,6 +22,9 @@
       "path": "vercel-deployment-task"
     },
     {
+      "path": "vercel-azdo-pr-comment-task"
+    },
+    {
       "path": "images",
       "addressable": true
     }
@@ -47,6 +50,14 @@
       "targets": ["ms.vss-distributed-task.tasks"],
       "properties": {
         "name": "vercel-deployment-task"
+      }
+    },
+    {
+      "id": "vercel-azdo-pr-comment-task",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": {
+        "name": "vercel-azdo-pr-comment-task"
       }
     }
   ]

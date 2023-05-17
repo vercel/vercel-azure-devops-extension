@@ -1,3 +1,4 @@
 packages:
   - "vercel-deployment-task-source"
+  - "vercel-azdo-pr-comment-task-source"
   - "scripts"
