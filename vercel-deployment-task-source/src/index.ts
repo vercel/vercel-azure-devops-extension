@@ -6,15 +6,9 @@ import {
   which,
   tool,
   setResourcePath,
-  getVariable,
   setVariable
 } from "azure-pipelines-task-lib";
 import path from "path";
-import { getPersonalAccessTokenHandler, WebApi } from "azure-devops-node-api";
-import {
-  CommentThreadStatus,
-  CommentType,
-} from "azure-devops-node-api/interfaces/GitInterfaces";
 
 function errorHandler(error: unknown) {
   setResult(TaskResult.Failed, `Unknown error thrown: ${error}`);
