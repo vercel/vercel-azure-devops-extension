@@ -11,7 +11,7 @@
   "version": {
     "Major": 0,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 2
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -35,13 +35,12 @@
       "label": "Deploy to Production",
       "required": false,
       "helpMarkDown": "Should the task deploy to production? Defaults to false"
-    },
+    }
+  ],
+  "outputVariables": [
     {
-      "name": "azureToken",
-      "type": "string",
-      "label": "Azure Personal Access Token",
-      "required": true,
-      "helpMarkDown": "An Azure personal access token with the Git 'PullRequestContribute' permission for your Azure DevOps Organization (https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate)"
+      "name": "deploymentTaskMessage",
+      "description": "The output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task."
     }
   ],
   "execution": {
