@@ -20,7 +20,7 @@ This extension contains Azure Pipelines tasks for automatically deploying your A
 1. Store the tokens as secret variables in your preferred methodology. Azure recommends using the [UI, Variables Groups, or Azure Key Vault](https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables). Whichever methodology you use, make sure it is accessible from Azure Pipelines.
 1. Navigate to the [Vercel Deployment Extension](https://marketplace.visualstudio.com/items?itemName=Vercel.vercel-deployment-extension) Visual Studio Marketplace page and add the extension to your organization.
    > Note: This step will not work until the extension is shared with the user or we make the extension public.
-2. With the extension added, you are now ready to use the tasks in your Azure Pipeline. The tasks are referable using `vercel-deployment-task` and `vercel-azdo-pr-comment-task`.
+1. With the extension added, you are now ready to use the tasks in your Azure Pipeline. The tasks are referable using `vercel-deployment-task` and `vercel-azdo-pr-comment-task`.
    > Note: Within a pipeline definition, the tasks will be used like `- task: vercel-deployment-task@0`. The `@0` represents the Major version of the task that the pipeline should use. During prerelease, we will publish the extension under Major version `0`. The extension will use Major version `1` when it is released publicly.
 
 Explore the following pipeline guides for further set up instructions:
@@ -69,13 +69,13 @@ This short guide will demonstrate how the extension can be used to automatically
 This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pipeline-set-up) pipeline in order to deploy from `main` to production _and_ deploy from pull requests to preview.
 
 1. Starting with the pipeline file created in [Basic Pipeline Set Up](#basic-pipeline-set-up), duplicate, rename, or open it in your editor of choice.
-2. Add a variable above the `steps` block
+1. Add a variable above the `steps` block
    ```yaml
    variables:
      isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
    ```
-3. Update the `production: true` input to be `production: $(isMain)`
-4. Below `inputs:`, add a `condition`:
+1. Update the `production: true` input to be `production: $(isMain)`
+1. Below `inputs:`, add a `condition`:
    ```yaml
    inputs:
      # ...
@@ -89,8 +89,8 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
        deploymentTaskMessage: $(Deploy.deploymentTaskMessage)
    ```
    - The `vercel-deployment-task` sets an output variable called `deploymentTaskMessage`. The reference `$(Deploy.deploymentTaskMessage)` comes from the `name: Deploy` on the `vercel-deployment-task` step.
-5. Push these changes to the repository, and set a [Build Policy](#azure-build-policy-set-up) for the `main` branch.
-6. Now create a new branch, push a commit, and open a PR against `main`. A new pipeline execution should trigger and it should create a preview deployment on Vercel as well as comment back on the PR with the preview URL.
+1. Push these changes to the repository, and set a [Build Policy](#azure-build-policy-set-up) for the `main` branch.
+1. Now create a new branch, push a commit, and open a PR against `main`. A new pipeline execution should trigger and it should create a preview deployment on Vercel as well as comment back on the PR with the preview URL.
 
 ## Extension Reference
 
