@@ -1,6 +1,6 @@
 # Vercel Azure DevOps Extension
 
-This extension contains the Vercel Deployment Task for automatically deploying your Azure DevOps project to Vercel. It contains other useful features like automatic Pull Request comments and a template pipeline for quick set up.
+This extension contains Azure Pipelines tasks for automatically deploying your Azure DevOps project to Vercel.
 
 - [Vercel Azure DevOps Extension](#vercel-azure-devops-extension)
   - [Extension Set Up](#extension-set-up)
@@ -8,7 +8,7 @@ This extension contains the Vercel Deployment Task for automatically deploying y
   - [Full Featured Pipeline Set Up](#full-featured-pipeline-set-up)
   - [Extension Reference](#extension-reference)
     - [Task: `vercel-deployment-task`](#task-vercel-deployment-task)
-      - [Properties](#properties)
+    - [Task: `vercel-azdo-pr-comment-task`](#task-vercel-azdo-pr-comment-task)
   - [Azure PAT Set Up](#azure-pat-set-up)
   - [Azure Build Policy Set Up](#azure-build-policy-set-up)
 
@@ -16,12 +16,12 @@ This extension contains the Vercel Deployment Task for automatically deploying y
 
 1. Create a Vercel Project
 1. Create a Vercel Personal Access Token with permissions to deploy the project created on step 1 (see the [Vercel PAT Set Up](https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token) guide for more information)
-1. Create a Azure DevOps Personal Access Token with permissions to Read/Write Pull Request threads (see the [Azure PAT set up](#azure-pat-set-up) guide for more information)
-1. Store these tokens as secret variables in your preferred methodology. Azure recommends using the [UI, Variables Groups, or Azure Key Vault](https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables). Whichever methodology you use, make sure it is accessible from Azure Pipelines.
+1. If you're planning on using the Pull Request Commenting Task, create an Azure DevOps Personal Access Token with permissions to Read/Write Pull Request threads (see the [Azure PAT set up](#azure-pat-set-up) guide for more information)
+1. Store the tokens as secret variables in your preferred methodology. Azure recommends using the [UI, Variables Groups, or Azure Key Vault](https://learn.microsoft.com/en-us/azure/devops/pipelines/process/set-secret-variables). Whichever methodology you use, make sure it is accessible from Azure Pipelines.
 1. Navigate to the [Vercel Deployment Extension](https://marketplace.visualstudio.com/items?itemName=Vercel.vercel-deployment-extension) Visual Studio Marketplace page and add the extension to your organization.
    > Note: This step will not work until the extension is shared with the user or we make the extension public.
-1. With the extension added, you are now ready to use it in your Azure Pipeline. It is referable using `- task: vercel-deployment-task@0`.
-   > Note: The `@0` represents the Major version of the task that the pipeline should use. During prerelease, we will publish the extension under Major version `0`. The extension will use Major version `1` when it is released publicly.
+2. With the extension added, you are now ready to use the tasks in your Azure Pipeline. The tasks are referable using `vercel-deployment-task` and `vercel-azdo-pr-comment-task`.
+   > Note: Within a pipeline definition, the tasks will be used like `- task: vercel-deployment-task@0`. The `@0` represents the Major version of the task that the pipeline should use. During prerelease, we will publish the extension under Major version `0`. The extension will use Major version `1` when it is released publicly.
 
 Explore the following pipeline guides for further set up instructions:
 
@@ -52,14 +52,14 @@ This short guide will demonstrate how the extension can be used to automatically
    ```yaml
    steps:
      - task: vercel-deployment-task@0
+       name: Deploy
        inputs:
          vercelProject: "<project-name>"
          vercelToken: "<vercel-token>" # '$(VERCEL_TOKEN)'
          production: true
-         azureToken: "<azure-token>" # '$(AZURE_TOKEN)'
    ```
    > Note: The `@0` represents the Major version of the task that the pipeline should use. During prerelease, we will publish the extension under Major version `0`. The extension will use Major version `1` when it is released publicly.
-   - The `vercelToken` and `azureToken` should reference the secret variables defined in [Extension Set Up](#extension-set-up).
+   - The `vercelToken` should reference the secret variable defined in [Extension Set Up](#extension-set-up).
 1. Commit, and push the pipeline to the repository.
 1. Navigate to Azure Pipelines and run the task for the first time if it doesn't run automatically.
 1. Make a change to your project and commit to the `main` branch, a new deployment pipeline run should automatically kick off in Azure Pipelines, and the Vercel Project should automatically update.
@@ -81,7 +81,16 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
      # ...
    condition: or(eq(variables.isMain, true), eq(variables['Build.Reason'], 'PullRequest'))
    ```
+1. Then add a new task step immediately after the `vercel-deployment-task` step, adding the PR commenting feature:
+   ```yaml
+   - task: vercel-azdo-pr-comment-task@0
+     inputs:
+       azureToken: $(AZURE_PAT)
+       deploymentTaskMessage: $(Deploy.deploymentTaskMessage)
+   ```
+   - The `vercel-deployment-task` sets an output variable called `deploymentTaskMessage`. The reference `$(Deploy.deploymentTaskMessage)` comes from the `name: Deploy` on the `vercel-deployment-task` step.
 5. Push these changes to the repository, and set a [Build Policy](#azure-build-policy-set-up) for the `main` branch.
+6. Now create a new branch, push a commit, and open a PR against `main`. A new pipeline execution should trigger and it should create a preview deployment on Vercel as well as comment back on the PR with the preview URL.
 
 ## Extension Reference
 
