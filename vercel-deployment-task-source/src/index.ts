@@ -71,7 +71,7 @@ async function run() {
         ? `Successfully deployed to ${stdout}`
         : `Failed to deploy ${vercelProject}.\n\nError:\n${stderr}`;
 
-    setVariable('deploymentTaskMessage', message);
+    setVariable('deploymentTaskMessage', message, false, true);
 
     if (code !== 0) {
       throw new Error(
