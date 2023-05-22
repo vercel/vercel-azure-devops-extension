@@ -6,9 +6,12 @@ import {
   which,
   tool,
   setResourcePath,
-  setVariable
+  setVariable,
+  getVariable
 } from "azure-pipelines-task-lib";
 import path from "path";
+import fs from 'fs';
+import { request } from 'undici';
 
 function errorHandler(error: unknown) {
   setResult(TaskResult.Failed, `Unknown error thrown: ${error}`);
@@ -16,6 +19,33 @@ function errorHandler(error: unknown) {
 
 process.on("unhandledRejection", errorHandler);
 process.on("unhandledException", errorHandler);
+
+async function getStagingPrefix (token: string) {
+  const projectJSONPath = path.join(__dirname, '.vercel', 'project.json')
+  const projectJSONData = fs.readFileSync(projectJSONPath, 'utf-8');
+  const projectJSON = JSON.parse(projectJSONData);
+  const orgId: string = projectJSON.orgId;
+
+  const isTeam = orgId.startsWith('team_');
+  const apiURL = isTeam
+    ? `https://api.vercel.com/v2/teams/${orgId}`
+    : `https://api.vercel.com/v2/user`;
+
+  const { statusCode, body } = await request(apiURL, {
+    "headers": {
+      "Authorization": `Bearer ${token}`
+    },
+    "method": "GET"
+  });
+
+  const result = await body.json();
+
+  if (statusCode !== 200) {
+    throw new Error(`Failed to get project owner information. Error: ${result.message}`)
+  }
+
+  return result.stagingPrefix;
+}
 
 async function run() {
   try {
@@ -60,19 +90,35 @@ async function run() {
     );
     ({ stdout, stderr, code } = vercelDeploy.execSync());
 
-    const message =
-      code === 0
-        ? `Successfully deployed to ${stdout}`
-        : `Failed to deploy ${vercelProject}.\n\nError:\n${stderr}`;
-
-    setVariable('deploymentTaskMessage', message, false, true);
-
     if (code !== 0) {
       throw new Error(
         `vercel deploy failed with exit code ${code}. Error: ${stderr}`
       );
     }
 
+    let deployURL = stdout;
+
+    if (!deployToProduction) {
+      const branchName = getVariable('Build.SourceBranchName');
+      const stagingPrefix = await getStagingPrefix(vercelToken);
+      const aliasURL = `${vercelProject}-${branchName}-${stagingPrefix}.vercel.app`;
+      deployURL = aliasURL;
+      vercel = tool(which("vercel", true));
+      const vercelAlias = vercel.arg(
+        ["alias", stdout, aliasURL, '--token', vercelToken]
+      );
+      ({ stdout, stderr, code } = vercelAlias.execSync());
+      if (code !== 0) {
+        throw new Error(
+          `vercel alias failed with exit code ${code}. Error: ${stderr}`
+        );
+      }
+    }
+
+    const message = `Successfully deployed to ${deployURL}`;
+
+    setVariable('deploymentTaskMessage', message, false, true);
+    
     console.log(message);
 
     setResult(TaskResult.Succeeded, "Success");
