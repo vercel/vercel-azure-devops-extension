@@ -103,11 +103,11 @@ async function run() {
       const branchName = getVariable('System.PullRequest.SourceBranch')!.replace('refs/heads/', '');
 
       const stagingPrefix = await getStagingPrefix(vercelToken);
-      const aliasURL = `https://${vercelProject}-${branchName}-${stagingPrefix}.vercel.app`;
-      deployURL = aliasURL;
+      const aliasHostname = `${vercelProject}-${branchName}-${stagingPrefix}.vercel.app`;
+      deployURL = `https://${aliasHostname}`;
       vercel = tool(which("vercel", true));
       const vercelAlias = vercel.arg(
-        ["alias", stdout, aliasURL, '--token', vercelToken]
+        ["alias", stdout, aliasHostname, '--token', vercelToken]
       );
       ({ stdout, stderr, code } = vercelAlias.execSync());
       if (code !== 0) {
