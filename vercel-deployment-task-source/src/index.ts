@@ -21,7 +21,7 @@ process.on("unhandledRejection", errorHandler);
 process.on("unhandledException", errorHandler);
 
 async function getStagingPrefix (token: string) {
-  const projectJSONPath = path.join(__dirname, '.vercel', 'project.json')
+  const projectJSONPath = path.join(getVariable('System.DefaultWorkingDirectory')!, '.vercel', 'project.json')
   const projectJSONData = fs.readFileSync(projectJSONPath, 'utf-8');
   const projectJSON = JSON.parse(projectJSONData);
   const orgId: string = projectJSON.orgId;
