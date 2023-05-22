@@ -44,7 +44,7 @@ async function getStagingPrefix (token: string) {
     throw new Error(`Failed to get project owner information. Error: ${result.message}`)
   }
 
-  return result.stagingPrefix;
+  return isTeam ? result.stagingPrefix : result.user.stagingPrefix;
 }
 
 async function run() {
@@ -99,9 +99,11 @@ async function run() {
     let deployURL = stdout;
 
     if (!deployToProduction) {
-      const branchName = getVariable('Build.SourceBranchName');
+      // This might break for non Azure Dev Ops PRs
+      const branchName = getVariable('System.PullRequest.SourceBranch')!.replace('refs/heads/', '');
+
       const stagingPrefix = await getStagingPrefix(vercelToken);
-      const aliasURL = `${vercelProject}-${branchName}-${stagingPrefix}.vercel.app`;
+      const aliasURL = `https://${vercelProject}-${branchName}-${stagingPrefix}.vercel.app`;
       deployURL = aliasURL;
       vercel = tool(which("vercel", true));
       const vercelAlias = vercel.arg(
