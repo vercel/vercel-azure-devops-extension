@@ -54,9 +54,13 @@ async function run() {
     const vercelProject = getInput("vercelProject", true)!;
     const vercelToken = getInput("vercelToken", true)!;
     const deployToProduction = getBoolInput("production", false);
+    const vercelCLIVersion = getInput("vercelCLIVersion", false) ?? 'latest';
+    const VERCEL_CLI_VERSION = getVariable("VERCEL_CLI_VERSION") ?? 'latest';
+
+    console.log(vercelCLIVersion, VERCEL_CLI_VERSION);
 
     const npm = tool(which("npm", true));
-    const npmInstall = npm.arg(["install", "-g", "vercel"]);
+    const npmInstall = npm.arg(["install", "-g", `vercel@${VERCEL_CLI_VERSION}`]);
     let { stdout, stderr, code } = npmInstall.execSync();
 
     if (code !== 0) {
