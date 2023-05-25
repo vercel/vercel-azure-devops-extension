@@ -48,13 +48,13 @@ async function getStagingPrefix(orgID: string, token: string): Promise<string> {
 }
 
 async function getProjectName(
-  projectID: string,
-  orgID: string,
+  projectId: string,
+  orgId: string,
   token: string
 ): Promise<string> {
-  let apiURL = `https://api.vercel.com/v9/projects/${projectID}`;
-  if (isTeamID(orgID)) {
-    apiURL += `?teamId=${orgID}`;
+  let apiURL = `https://api.vercel.com/v9/projects/${projectId}`;
+  if (isTeamID(orgId)) {
+    apiURL += `?teamId=${orgId}`;
   }
 
   const { statusCode, body } = await request(apiURL, {
@@ -68,7 +68,7 @@ async function getProjectName(
 
   if (statusCode !== 200) {
     throw new Error(
-      `Failed to get project owner information. Error: ${result.message}`
+      `Failed to get project information. Error: ${result.message}`
     );
   }
 
@@ -121,17 +121,17 @@ async function run() {
   try {
     setResourcePath(path.join(__dirname, "..", "task.json"));
 
-    const debug = getInput("debug");
+    const debug = getBoolInput("debug");
 
-    const vercelProjectID = reconcileConfigurationInput(
-      "vercelProjectID",
+    const vercelProjectId = reconcileConfigurationInput(
+      "vercelProjectId",
       "VERCEL_PROJECT_ID",
-      "Vercel Project ID"
+      "Vercel Project Id"
     );
-    const vercelOrgID = reconcileConfigurationInput(
-      "vercelOrgID",
+    const vercelOrgId = reconcileConfigurationInput(
+      "vercelOrgId",
       "VERCEL_ORG_ID",
-      "Vercel Org ID"
+      "Vercel Org Id"
     );
     const vercelToken = reconcileConfigurationInput(
       "vercelToken",
@@ -191,8 +191,8 @@ async function run() {
         "System.PullRequest.SourceBranch"
       )!.replace("refs/heads/", "");
       const [projectName, stagingPrefix] = await Promise.all([
-        getProjectName(vercelProjectID, vercelOrgID, vercelToken),
-        getStagingPrefix(vercelOrgID, vercelToken),
+        getProjectName(vercelProjectId, vercelOrgId, vercelToken),
+        getStagingPrefix(vercelOrgId, vercelToken),
       ]);
       const aliasHostname = `${projectName}-${branchName}-${stagingPrefix}.vercel.app`;
       deployURL = `https://${aliasHostname}`;

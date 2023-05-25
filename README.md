@@ -54,8 +54,8 @@ This short guide will demonstrate how the extension can be used to automatically
      - task: vercel-deployment-task@0
        name: Deploy
        inputs:
-         vercelProjectID: "<project-id>"
-         vercelOrgID: "<org-id>"
+         vercelProjectId: "<project-id>"
+         vercelOrgId: "<org-id>"
          vercelToken: "<vercel-token>" # '$(VERCEL_TOKEN)'
          production: true
    ```
@@ -103,9 +103,9 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
 #### Properties
 
-- `vercelProjectID`
+- `vercelProjectId`
 
-  The ID of your Vercel Project.
+  The Id of your Vercel Project.
 
   Can alternatively be set as the environment variable `VERCEL_PROJECT_ID`.
 
@@ -113,9 +113,9 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
-- `vercelOrgID`
+- `vercelOrgId`
 
-  The ID of your Vercel Org.
+  The Id of your Vercel Org.
 
   Can alternatively be set as the environment variable `VERCEL_ORG_ID`.
 
@@ -136,6 +136,16 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 - `production`
 
   Should the task deploy to production? When omitted, or set to `false`, the task will create _preview_ deployments.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
+- `debug`
+
+  Enable `--debug` output for the internal Vercel CLI operations.
 
   Type: `boolean`
 

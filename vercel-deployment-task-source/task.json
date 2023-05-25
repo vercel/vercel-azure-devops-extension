@@ -16,18 +16,18 @@
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
     {
-      "name": "vercelProjectID",
+      "name": "vercelProjectId",
       "type": "string",
-      "label": "Vercel Project ID",
+      "label": "Vercel Project Id",
       "required": false,
-      "helpMarkDown": "The ID of your Vercel Project. Can also be set as the environment variable `VERCEL_PROJECT_ID`."
+      "helpMarkDown": "The Id of your Vercel Project. Can also be set as the environment variable `VERCEL_PROJECT_ID`."
     },
     {
-      "name": "vercelOrgID",
+      "name": "vercelOrgId",
       "type": "string",
-      "label": "Vercel Org ID",
+      "label": "Vercel Org Id",
       "required": false,
-      "helpMarkDown": "The ID of your Vercel Org. Can also be set as the environment variable `VERCEL_ORG_ID`."
+      "helpMarkDown": "The Id of your Vercel Org. Can also be set as the environment variable `VERCEL_ORG_ID`."
     },
     {
       "name": "vercelToken",
@@ -42,6 +42,13 @@
       "label": "Deploy to Production",
       "required": false,
       "helpMarkDown": "Should the task deploy to production? Defaults to false"
+    },
+    {
+      "name": "debug",
+      "type": "boolean",
+      "label": "Enable debug output",
+      "required": false,
+      "helpMarkDown": "Enable `--debug` output for the internal Vercel CLI operations."
     }
   ],
   "outputVariables": [
