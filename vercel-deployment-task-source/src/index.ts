@@ -20,15 +20,14 @@ function errorHandler(error: unknown) {
 process.on("unhandledRejection", errorHandler);
 process.on("unhandledException", errorHandler);
 
-async function getStagingPrefix (token: string) {
-  const projectJSONPath = path.join(getVariable('System.DefaultWorkingDirectory')!, '.vercel', 'project.json')
-  const projectJSONData = fs.readFileSync(projectJSONPath, 'utf-8');
-  const projectJSON = JSON.parse(projectJSONData);
-  const orgId: string = projectJSON.orgId;
+function isTeamID (orgID: string) {
+  return orgID.startsWith('team_');
+}
 
-  const isTeam = orgId.startsWith('team_');
+async function getStagingPrefix (orgID: string, token: string): Promise<string> {
+  const isTeam = isTeamID(orgID);
   const apiURL = isTeam
-    ? `https://api.vercel.com/v2/teams/${orgId}`
+    ? `https://api.vercel.com/v2/teams/${orgID}`
     : `https://api.vercel.com/v2/user`;
 
   const { statusCode, body } = await request(apiURL, {
@@ -47,23 +46,89 @@ async function getStagingPrefix (token: string) {
   return isTeam ? result.stagingPrefix : result.user.stagingPrefix;
 }
 
+async function getProjectName (projectID: string, orgID: string, token: string): Promise<string> {
+  let apiURL = `https://api.vercel.com/v9/projects/${projectID}`
+  if (isTeamID(orgID)) {
+    apiURL += `?teamId=${orgID}`
+  }
+
+  const { statusCode, body } = await request(apiURL, {
+    "headers": {
+      "Authorization": `Bearer ${token}`
+    },
+    "method": "GET"
+  });
+
+  const result = await body.json();
+
+  if (statusCode !== 200) {
+    throw new Error(`Failed to get project owner information. Error: ${result.message}`)
+  }
+
+  return result.name;
+}
+
+/**
+ * To reconcile configuration inputs, get both the _input_ and the _environment variable_.
+ * 
+ * If neither are defined, throw an error.
+ * 
+ * If both are defined, log a warning that _input_ will be used.
+ * 
+ * If _input_ is defined, and not _environment variable_, set the _environment variable_ to the _input_ value and return the _input_ value.
+ * 
+ * If _environment variable_ is defined, and not _input_, return the _environment variable_ value.
+ * 
+ * @param configurationInput 
+ * @returns 
+ */
+function reconcileConfigurationInput (inputKey: string, envVarKey: string, name: string): string {
+  const inputValue = getInput(inputKey);
+  const envVarValue = getVariable(envVarKey);
+
+  if (!inputValue && !envVarValue) {
+    throw new Error(`${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``)
+  }
+  
+  if (inputValue && envVarValue) {
+    console.warn(`${name} specified by both \`${inputKey}\` input and \`${envVarKey}\` environment variable. Input field \`${inputKey}\` (${inputValue}) will be used.`);
+  }
+
+  if (inputValue && !envVarValue) {
+    setVariable(envVarKey, inputValue);
+    return inputValue;
+  }
+
+  /*
+    Typescript still thinks this is undefined but logically this should be defined:
+
+    p = input defined
+    q = env var defined
+
+    p, q -> q
+    p, !q -> p
+    !p, q -> q
+    !p, !q -> throw
+  */
+  return envVarValue!;
+}
+
 async function run() {
   try {
     setResourcePath(path.join(__dirname, "..", "task.json"));
-    // assert type as defined since, the `required` option is set to `true` (and `getInput` will throw if the variables are undefined).
-    const vercelProject = getInput("vercelProject", true)!;
-    const vercelToken = getInput("vercelToken", true)!;
-    const deployToProduction = getBoolInput("production", false);
 
-    const VERCEL_CLI_VERSION = getVariable("VERCEL_CLI_VERSION") ?? 'latest';
+    const debugInput = getInput("debug");
 
-    let tarballURL;
-    try {
-      tarballURL = new URL(VERCEL_CLI_VERSION);
-    } catch (e) {};
+    const vercelProjectID = reconcileConfigurationInput("vercelProjectID", "VERCEL_PROJECT_ID", "Vercel Project ID");
+    const vercelOrgID = reconcileConfigurationInput("vercelOrgID", "VERCEL_ORG_ID", "Vercel Org ID");
+    const vercelToken = reconcileConfigurationInput("vercelToken", "VERCEL_TOKEN", "Vercel Token");
+
+    const deployToProduction = getBoolInput("production");
+
+    const VERCEL_CLI_VERSION = getVariable("VERCEL_CLI_VERSION") ?? 'vercel@latest';
 
     const npm = tool(which("npm", true));
-    const npmInstall = npm.arg(["install", "-g", tarballURL ? tarballURL.toString() : `vercel@${VERCEL_CLI_VERSION}`]);
+    const npmInstall = npm.arg(["install", "-g", VERCEL_CLI_VERSION]);
     let { stdout, stderr, code } = npmInstall.execSync();
 
     if (code !== 0) {
@@ -73,27 +138,16 @@ async function run() {
     }
 
     let vercel = tool(which("vercel", true));
-    const vercelLink = vercel.arg([
-      "link",
-      "--yes",
-      "--project",
-      vercelProject,
-      "--token",
-      vercelToken,
-    ]);
-    ({ stdout, stderr, code } = vercelLink.execSync());
-
-    if (code !== 0) {
-      throw new Error(
-        `vercel link failed with exit code ${code}. Error: ${stderr}`
-      );
-    }
+    const vercelPull = vercel.arg(
+      ["pull", '--yes', `--environment=${deployToProduction ? 'production' : 'preview'}`, `--token=${vercelToken}`]
+    );
+    ({ stdout, stderr, code } = vercelPull.execSync());
 
     vercel = tool(which("vercel", true));
     const vercelDeploy = vercel.arg(
       deployToProduction
-        ? ["deploy", "--prod", "--token", vercelToken]
-        : ["deploy", "--token", vercelToken]
+        ? ["deploy", "--prod", `--token=${vercelToken}`]
+        : ["deploy", `--token=${vercelToken}`]
     );
     ({ stdout, stderr, code } = vercelDeploy.execSync());
 
@@ -108,13 +162,15 @@ async function run() {
     if (!deployToProduction) {
       // This might break for non Azure Dev Ops PRs
       const branchName = getVariable('System.PullRequest.SourceBranch')!.replace('refs/heads/', '');
-
-      const stagingPrefix = await getStagingPrefix(vercelToken);
-      const aliasHostname = `${vercelProject}-${branchName}-${stagingPrefix}.vercel.app`;
+      const [projectName, stagingPrefix] = await Promise.all([
+        getProjectName(vercelProjectID, vercelOrgID, vercelToken),
+        getStagingPrefix(vercelOrgID, vercelToken)
+      ])
+      const aliasHostname = `${projectName}-${branchName}-${stagingPrefix}.vercel.app`;
       deployURL = `https://${aliasHostname}`;
       vercel = tool(which("vercel", true));
       const vercelAlias = vercel.arg(
-        ["alias", stdout, aliasHostname, '--token', vercelToken]
+        ["alias", stdout, aliasHostname, `--token=${vercelToken}`]
       );
       ({ stdout, stderr, code } = vercelAlias.execSync());
       if (code !== 0) {
