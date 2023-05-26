@@ -99,7 +99,7 @@ function reconcileConfigurationInput(
 
   if (inputValue && envVarValue) {
     console.warn(
-      `${name} specified by both \`${inputKey}\` input and \`${envVarKey}\` environment variable. Input field \`${inputKey}\` (${inputValue}) will be used.`
+      `${name} specified by both \`${inputKey}\` input and \`${envVarKey}\` environment variable. Input field \`${inputKey}\` will be used.`
     );
   }
 
