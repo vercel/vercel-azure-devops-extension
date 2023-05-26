@@ -54,7 +54,8 @@ This short guide will demonstrate how the extension can be used to automatically
      - task: vercel-deployment-task@0
        name: Deploy
        inputs:
-         vercelProject: "<project-name>"
+         vercelProjectId: "<project-id>"
+         vercelOrgId: "<org-id>"
          vercelToken: "<vercel-token>" # '$(VERCEL_TOKEN)'
          production: true
    ```
@@ -96,27 +97,55 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
 
 ### Task: `vercel-deployment-task`
 
+An Azure Pipelines Task Extension for automatically deploying to Vercel.
+
+The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can all be replaced with environment variables. See their respective property sections for more details.
+
 #### Properties
 
-- `vercelProject`
+- `vercelProjectId`
 
-  The name of your Vercel Project
+  The ID of your Vercel Project.
+
+  Can alternatively be set as the environment variable `VERCEL_PROJECT_ID`.
 
   Type: `string`
 
-  Required: `true`
+  Required: `false`
+
+- `vercelOrgId`
+
+  The ID of your Vercel Org.
+
+  Can alternatively be set as the environment variable `VERCEL_ORG_ID`.
+
+  Type: `string`
+
+  Required: `false`
 
 - `vercelToken`
 
   A Vercel personal access token with deploy permissions for your Vercel Project. [Guide](https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token)
 
+  Can alternatively be set as the environment variable `VERCEL_TOKEN`.
+
   Type: `string`
 
-  Required: `true`
+  Required: `false`
 
 - `production`
 
   Should the task deploy to production? When omitted, or set to `false`, the task will create _preview_ deployments.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
+- `debug`
+
+  Enable `--debug` output for the internal Vercel CLI operations.
 
   Type: `boolean`
 
