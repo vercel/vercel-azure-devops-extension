@@ -18,16 +18,16 @@
     {
       "name": "vercelProjectId",
       "type": "string",
-      "label": "Vercel Project Id",
+      "label": "Vercel Project ID",
       "required": false,
-      "helpMarkDown": "The Id of your Vercel Project. Can also be set as the environment variable `VERCEL_PROJECT_ID`."
+      "helpMarkDown": "The ID of your Vercel Project. Can also be set as the environment variable `VERCEL_PROJECT_ID`."
     },
     {
       "name": "vercelOrgId",
       "type": "string",
-      "label": "Vercel Org Id",
+      "label": "Vercel Org ID",
       "required": false,
-      "helpMarkDown": "The Id of your Vercel Org. Can also be set as the environment variable `VERCEL_ORG_ID`."
+      "helpMarkDown": "The ID of your Vercel Org. Can also be set as the environment variable `VERCEL_ORG_ID`."
     },
     {
       "name": "vercelToken",

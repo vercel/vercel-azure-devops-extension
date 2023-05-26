@@ -105,7 +105,7 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
 - `vercelProjectId`
 
-  The Id of your Vercel Project.
+  The ID of your Vercel Project.
 
   Can alternatively be set as the environment variable `VERCEL_PROJECT_ID`.
 
@@ -115,7 +115,7 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
 - `vercelOrgId`
 
-  The Id of your Vercel Org.
+  The ID of your Vercel Org.
 
   Can alternatively be set as the environment variable `VERCEL_ORG_ID`.
 
