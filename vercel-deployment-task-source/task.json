@@ -9,9 +9,9 @@
   "category": "Azure Pipelines",
   "author": "Vercel",
   "version": {
-    "Major": 0,
+    "Major": 1,
     "Minor": 0,
-    "Patch": 10
+    "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
