@@ -3,8 +3,9 @@
   "manifestVersion": 1,
   "id": "vercel-deployment-extension",
   "name": "Vercel Deployment Extension",
-  "version": "0.0.15",
+  "version": "1.0.0",
   "publisher": "Vercel",
+  "public": true,
   "targets": [
     {
       "id": "Microsoft.VisualStudio.Services"

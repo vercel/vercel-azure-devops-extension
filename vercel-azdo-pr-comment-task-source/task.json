@@ -9,9 +9,9 @@
   "category": "Azure Pipelines",
   "author": "Vercel",
   "version": {
-    "Major": 0,
+    "Major": 1,
     "Minor": 0,
-    "Patch": 1
+    "Patch": 0
   },
   "instanceNameFormat": "Commenting on Pull Request",
   "inputs": [
