@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "vercel-deployment-extension",
   "name": "Vercel Deployment Extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "Vercel",
   "public": true,
   "targets": [
@@ -35,7 +35,7 @@
     "uri": "https://github.com/vercel/vercel-azure-devops-extension"
   },
   "icons": {
-    "default": "./icons/vercel-icon-dark.png"
+    "default": "./icons/logo.png"
   },
   "tags": [
     "Azure DevOps Extensions",
