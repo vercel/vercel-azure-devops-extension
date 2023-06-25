@@ -172,9 +172,6 @@ async function run() {
       `--environment=${deployToProduction ? "production" : "preview"}`,
       `--token=${vercelToken}`,
     ];
-    if (vercelCurrentWorkingDirectory) {
-      vercelPullArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
-    }
     if (debug) {
       vercelPullArgs.push("--debug");
     }
@@ -185,6 +182,9 @@ async function run() {
     const vercelDeployArgs = deployToProduction
       ? ["deploy", "--prod", `--token=${vercelToken}`]
       : ["deploy", `--token=${vercelToken}`];
+    if (vercelCurrentWorkingDirectory) {
+      vercelDeployArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
+    }
     if (debug) {
       vercelDeployArgs.push("--debug");
     }
