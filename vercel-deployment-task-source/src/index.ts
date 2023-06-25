@@ -92,7 +92,8 @@ async function getProjectName(
 function reconcileConfigurationInput(
   inputKey: string,
   envVarKey: string,
-  name: string
+  name: string,
+  optional: boolean = false
 ): string {
   const inputValue = getInput(inputKey);
   const envVarValue = getVariable(envVarKey);
@@ -105,6 +106,9 @@ function reconcileConfigurationInput(
 
   if (!envVarValue) {
     if (!inputValue) {
+      if (optional) {
+        return null as any;
+      }
       throw new Error(
         `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
       );
@@ -139,6 +143,13 @@ async function run() {
       "Vercel Token"
     );
 
+    const vercelCurrentWorkingDirectory = reconcileConfigurationInput(
+      "vercelCwd",
+      "VERCEL_CWD",
+      "Vercel Cwd",
+      true
+    );
+
     const deployToProduction = getBoolInput("production");
 
     const VERCEL_CLI_VERSION =
@@ -161,6 +172,9 @@ async function run() {
       `--environment=${deployToProduction ? "production" : "preview"}`,
       `--token=${vercelToken}`,
     ];
+    if (vercelCurrentWorkingDirectory) {
+      vercelPullArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
+    }
     if (debug) {
       vercelPullArgs.push("--debug");
     }

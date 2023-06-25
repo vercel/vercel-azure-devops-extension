@@ -132,6 +132,18 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+  - `vercelCwd`
+
+  The Current Working Directory option can be used to provide a working directory (that can be different from the current directory) when running Vercel deployment task.
+
+  This option can be a relative or absolute path. [Guide](https://vercel.com/docs/cli/global-options#current-working-directory)
+
+  Can alternatively be set as the environment variable `VERCEL_CWD`.
+
+  Type: `string`
+
+  Required: `false`
+
 - `production`
 
   Should the task deploy to production? When omitted, or set to `false`, the task will create _preview_ deployments.
