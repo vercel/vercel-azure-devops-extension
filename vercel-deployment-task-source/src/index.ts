@@ -93,7 +93,7 @@ function reconcileConfigurationInput(
   inputKey: string,
   envVarKey: string,
   name: string,
-  optional: boolean = false
+  defaultValue?: string
 ): string {
   const inputValue = getInput(inputKey);
   const envVarValue = getVariable(envVarKey);
@@ -106,12 +106,14 @@ function reconcileConfigurationInput(
 
   if (!envVarValue) {
     if (!inputValue) {
-      if (optional) {
-        return null as any;
+      if (!defaultValue) {
+        throw new Error(
+          `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
+        );
       }
-      throw new Error(
-        `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
-      );
+
+      setVariable(envVarKey, defaultValue);
+      return defaultValue;
     }
 
     setVariable(envVarKey, inputValue);
@@ -144,10 +146,10 @@ async function run() {
     );
 
     const vercelCurrentWorkingDirectory = reconcileConfigurationInput(
-      "vercelCwd",
+      "vercelCWD",
       "VERCEL_CWD",
-      "Vercel Cwd",
-      true
+      "Vercel Current Working Directory",
+      getVariable("System.DefaultWorkingDirectory")
     );
 
     const deployToProduction = getBoolInput("production");
