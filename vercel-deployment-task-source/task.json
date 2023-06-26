@@ -10,7 +10,7 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 0,
+    "Minor": 1,
     "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
@@ -35,6 +35,13 @@
       "label": "Vercel Personal Access Token",
       "required": false,
       "helpMarkDown": "A Vercel personal access token with deploy permissions for your Vercel Project (https://vercel.com/guides/how-do-i-use-a-vercel-api-access-token). Can also be set as the environment variable `VERCEL_TOKEN`."
+    },
+    {
+      "name": "vercelCWD",
+      "type": "string",
+      "label": "Vercel Current Working Directory",
+      "required": false,
+      "helpMarkDown": "The working directory the Vercel operations are executed from. Defaults to `System.DefaultWorkingDirectory`."
     },
     {
       "name": "production",

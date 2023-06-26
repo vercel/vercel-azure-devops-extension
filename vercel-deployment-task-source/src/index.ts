@@ -92,7 +92,8 @@ async function getProjectName(
 function reconcileConfigurationInput(
   inputKey: string,
   envVarKey: string,
-  name: string
+  name: string,
+  defaultValue?: string
 ): string {
   const inputValue = getInput(inputKey);
   const envVarValue = getVariable(envVarKey);
@@ -105,9 +106,14 @@ function reconcileConfigurationInput(
 
   if (!envVarValue) {
     if (!inputValue) {
-      throw new Error(
-        `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
-      );
+      if (!defaultValue) {
+        throw new Error(
+          `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
+        );
+      }
+
+      setVariable(envVarKey, defaultValue);
+      return defaultValue;
     }
 
     setVariable(envVarKey, inputValue);
@@ -137,6 +143,13 @@ async function run() {
       "vercelToken",
       "VERCEL_TOKEN",
       "Vercel Token"
+    );
+
+    const vercelCurrentWorkingDirectory = reconcileConfigurationInput(
+      "vercelCWD",
+      "VERCEL_CWD",
+      "Vercel Current Working Directory",
+      getVariable("System.DefaultWorkingDirectory")
     );
 
     const deployToProduction = getBoolInput("production");
@@ -171,6 +184,9 @@ async function run() {
     const vercelDeployArgs = deployToProduction
       ? ["deploy", "--prod", `--token=${vercelToken}`]
       : ["deploy", `--token=${vercelToken}`];
+    if (vercelCurrentWorkingDirectory) {
+      vercelDeployArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
+    }
     if (debug) {
       vercelDeployArgs.push("--debug");
     }
