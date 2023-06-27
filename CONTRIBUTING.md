@@ -21,5 +21,5 @@ To create a new release:
     - The extension version is incremented based on the greatest version change within the task.json changes.
     - As an example, if one task receives a `Patch` update, and the other receives a `Minor` update, then the extension version should increment its `Minor` version (and subsequently reset the `Patch` value to `0`).
     - If you are unsure, consult with the team before pushing version changes.
-- After modifying the version values, create and push a commit.
-- Once merged or pushed to `main`, the CI will automatically run, and if the extension version value has changed, the workflow will succeed and the new version will be published to Visual Studio Marketplace.
+- After modifying the version values, create and push a commit, and open a PR against `main`.
+- Once merged to `main`, the CI will automatically run, and if the extension version value has changed, the workflow will succeed and the new version will be published to Visual Studio Marketplace.
