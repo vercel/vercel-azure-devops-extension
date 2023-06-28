@@ -14,12 +14,12 @@ To create a new release:
     - Increment `Patch` for **Fixes**.
     - Increment `Minor` for **Features**.
     - Increment `Major` for **Breaking Changes**.
-      - Before merging Major changes, consult with the CLI team to ensure proper documentation and update paths exist.
-    - If you are unsure how to version the changes, consult with the CLI team.
+      - Before merging Major changes, consult with the Vercel CLI team to ensure proper documentation and update paths exist.
+    - If you are unsure how to version the changes, consult with the Vercel CLI team.
 - After updating the version(s) for the modified task(s), update the extension version within [vss-extension.json](./vss-extension.json)
   - This also follows [SemVer](https://semver.org/), but how it is updated is based on the task.json version changes.
     - The extension version is incremented based on the greatest version change within the task.json changes.
     - As an example, if one task receives a `Patch` update, and the other receives a `Minor` update, then the extension version should increment its `Minor` version (and subsequently reset the `Patch` value to `0`).
-    - If you are unsure, consult with the CLI team before pushing version changes.
+    - If you are unsure, consult with the Vercel CLI team before pushing version changes.
 - After modifying the version values, create and push a commit, and open a PR against `main`.
 - Once merged to `main`, the CI will automatically run, and if the extension version value has changed, the workflow will succeed and the new version will be published to Visual Studio Marketplace.
