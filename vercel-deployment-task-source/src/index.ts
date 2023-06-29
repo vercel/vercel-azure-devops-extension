@@ -202,39 +202,54 @@ async function run() {
     let deployURL = stdout;
 
     if (!deployToProduction) {
-      // This might break for non Azure Dev Ops PRs
-      const branchName = getVariable(
-        "System.PullRequest.SourceBranch"
-      )!.replace("refs/heads/", "");
-      const [projectName, stagingPrefix] = await Promise.all([
-        getProjectName(vercelProjectId, vercelOrgId, vercelToken),
-        getStagingPrefix(vercelOrgId, vercelToken),
-      ]);
-      const aliasHostname = `${projectName}-${branchName}-${stagingPrefix}.vercel.app`;
-      deployURL = `https://${aliasHostname}`;
-      vercel = tool(which("vercel", true));
-      const vercelAliasArgs = [
-        "alias",
-        stdout,
-        aliasHostname,
-        `--token=${vercelToken}`,
-      ];
-      if (debug) {
-        vercelAliasArgs.push("--debug");
+      // Get branch name
+      // If triggered by a PR use `System.PullRequest.SourceBranch` (and replace the `refs/heads/`)
+      // If not triggered by a PR use `Build.SourceBranchName`
+      let branchName: string | undefined;
+      const buildReason = getVariable("Build.Reason");
+      if (buildReason && buildReason === "PullRequest") {
+        branchName = getVariable("System.PullRequest.SourceBranch");
+        if (branchName) {
+          branchName = branchName.replace("refs/heads/", "");
+        }
+      } else {
+        branchName = getVariable("Build.SourceBranchName");
       }
-      const vercelAlias = vercel.arg(vercelAliasArgs);
-      ({ stdout, stderr, code } = vercelAlias.execSync());
-      if (code !== 0) {
-        throw new Error(
-          `vercel alias failed with exit code ${code}. Error: ${stderr}`
+
+      if (branchName) {
+        const [projectName, stagingPrefix] = await Promise.all([
+          getProjectName(vercelProjectId, vercelOrgId, vercelToken),
+          getStagingPrefix(vercelOrgId, vercelToken),
+        ]);
+        const aliasHostname = `${projectName}-${branchName}-${stagingPrefix}.vercel.app`;
+        deployURL = `https://${aliasHostname}`;
+        vercel = tool(which("vercel", true));
+        const vercelAliasArgs = [
+          "alias",
+          stdout,
+          aliasHostname,
+          `--token=${vercelToken}`,
+        ];
+        if (debug) {
+          vercelAliasArgs.push("--debug");
+        }
+        const vercelAlias = vercel.arg(vercelAliasArgs);
+        ({ stdout, stderr, code } = vercelAlias.execSync());
+        if (code !== 0) {
+          throw new Error(
+            `vercel alias failed with exit code ${code}. Error: ${stderr}`
+          );
+        }
+      } else {
+        console.error(
+          `Could not determine branch name for staging alias URL. Skipping alias operation.`
         );
       }
     }
 
+    setVariable("deploymentURL", deployURL, false, true);
     const message = `Successfully deployed to ${deployURL}`;
-
     setVariable("deploymentTaskMessage", message, false, true);
-
     console.log(message);
 
     setResult(TaskResult.Succeeded, "Success");
