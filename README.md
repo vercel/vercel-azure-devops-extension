@@ -166,6 +166,12 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
 #### Outputs
 
+- `deploymentURL`
+
+  The URL of the deployment.
+
+  Type: `string`
+
 - `deploymentTaskMessage`
 
   The output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task.
