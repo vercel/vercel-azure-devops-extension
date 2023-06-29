@@ -10,7 +10,7 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 1,
+    "Minor": 2,
     "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
@@ -60,8 +60,12 @@
   ],
   "outputVariables": [
     {
+      "name": "deploymentURL",
+      "description": "The URL of the deployment."
+    },
+    {
       "name": "deploymentTaskMessage",
-      "description": "The output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task."
+      "description": "The message output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task."
     }
   ],
   "execution": {
