@@ -221,7 +221,8 @@ async function run() {
           getProjectName(vercelProjectId, vercelOrgId, vercelToken),
           getStagingPrefix(vercelOrgId, vercelToken),
         ]);
-        const aliasHostname = `${projectName}-${branchName}-${stagingPrefix}.vercel.app`;
+        const escapedBranchName = branchName.replace(/[^a-z0-9\-]-?/g, '-');
+        const aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
         deployURL = `https://${aliasHostname}`;
         vercel = tool(which("vercel", true));
         const vercelAliasArgs = [
