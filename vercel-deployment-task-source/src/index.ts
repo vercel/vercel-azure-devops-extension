@@ -230,6 +230,7 @@ async function run() {
           stdout,
           aliasHostname,
           `--token=${vercelToken}`,
+          `--scope=${vercelOrgId}`,
         ];
         if (debug) {
           vercelAliasArgs.push("--debug");
