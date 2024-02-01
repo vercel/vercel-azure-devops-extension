@@ -231,11 +231,12 @@ async function run() {
          * projectName has a fixedLength `x`
          * stagingPrefix has a fixedLenght `y`
          * .vercel.app has a fixedLength `11`
+         * two dashes
          * 
-         * escapedBranchName can have a maximum length of 63-11-y-x
+         * escapedBranchName can have a maximum length of 63-11-2-y-x
         */
         let aliasingBranchName = escapedBranchName;
-        const branchNameAllowedLength = 52-projectName.length-stagingPrefix.length;
+        const branchNameAllowedLength = 50-projectName.length-stagingPrefix.length;
         if (escapedBranchName.length > branchNameAllowedLength) {
           aliasingBranchName = aliasingBranchName.substring(0, branchNameAllowedLength);
 
