@@ -222,7 +222,29 @@ async function run() {
           getStagingPrefix(vercelOrgId, vercelToken),
         ]);
         const escapedBranchName = branchName.replace(/[^a-zA-Z0-9\-]-?/g, '-');
-        const aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
+        /**
+         * Truncating branch name according to RFC 1035 if necessary 
+         * Maximum length is 63 characters.
+         * 
+         * Read more: https://vercel.com/guides/why-is-my-vercel-deployment-url-being-shortened
+         * 
+         * projectName has a fixedLength `x`
+         * stagingPrefix has a fixedLenght `y`
+         * .vercel.app has a fixedLength `11`
+         * 
+         * escapedBranchName can have a maximum length of 63-11-y-x
+        */
+        let aliasingBranchName = escapedBranchName;
+        const branchNameAllowedLength = 52-projectName.length-stagingPrefix.length;
+        if (escapedBranchName.length > branchNameAllowedLength) {
+          aliasingBranchName.substring(0, branchNameAllowedLength);
+
+          // If, after truncation, the last character is a dash, remove it
+          if (aliasingBranchName[branchNameAllowedLength] === '-') {
+            aliasingBranchName.substring(0, branchNameAllowedLength-1)
+          }
+        }
+        const aliasHostname = `${projectName}-${aliasingBranchName}-${stagingPrefix}.vercel.app`;
         deployURL = `https://${aliasHostname}`;
         vercel = tool(which("vercel", true));
         const vercelAliasArgs = [
