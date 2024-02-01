@@ -237,11 +237,11 @@ async function run() {
         let aliasingBranchName = escapedBranchName;
         const branchNameAllowedLength = 52-projectName.length-stagingPrefix.length;
         if (escapedBranchName.length > branchNameAllowedLength) {
-          aliasingBranchName.substring(0, branchNameAllowedLength);
+          aliasingBranchName = aliasingBranchName.substring(0, branchNameAllowedLength);
 
           // If, after truncation, the last character is a dash, remove it
           if (aliasingBranchName[branchNameAllowedLength] === '-') {
-            aliasingBranchName.substring(0, branchNameAllowedLength-1)
+            aliasingBranchName = aliasingBranchName.substring(0, branchNameAllowedLength-1)
           }
         }
         const aliasHostname = `${projectName}-${aliasingBranchName}-${stagingPrefix}.vercel.app`;
