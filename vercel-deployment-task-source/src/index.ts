@@ -234,18 +234,38 @@ async function run() {
          * two dashes
          * 
          * escapedBranchName can have a maximum length of 63-11-2-y-x
+         * 
+         * This can cause confusion if you have all branches following a scheme, e.g.
+         *    feature/PREFIX-12345-my-feature-branch-name
+         *    feature/PREFIX-12346-my-second-feature-branch-name
+         * 
+         * which can produce identical branchNames in the alias:
+         *    longer-project-name-feature-prefix-12-staging-prefix.vercel.app
+         *    longer-project-name-feature-prefix-12-staging-prefix.vercel.app
+         * 
+         * Therefore, if the alias would exceed 63 characters, we remove the
+         * stagingPrefix to have the longest branchName substring possible:
+         *    longer-project-name-feature-prefix-12345-my-feature.vercel.app
+         *    longer-project-name-feature-prefix-12346-my-second-f.vercel.app
         */
-        let aliasingBranchName = escapedBranchName;
         const branchNameAllowedLength = 50-projectName.length-stagingPrefix.length;
+        let aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
+
         if (escapedBranchName.length > branchNameAllowedLength) {
-          aliasingBranchName = aliasingBranchName.substring(0, branchNameAllowedLength);
+          // Calculate the maximum length of the branchName by removing the stagingPrefix and the dash
+          const branchNameExtendedLength = branchNameAllowedLength+stagingPrefix.length+1;
+
+          let aliasingBranchName = escapedBranchName.substring(0, branchNameExtendedLength);;
 
           // If, after truncation, the last character is a dash, remove it
-          if (aliasingBranchName[branchNameAllowedLength] === '-') {
-            aliasingBranchName = aliasingBranchName.substring(0, branchNameAllowedLength-1)
+          if (aliasingBranchName[branchNameExtendedLength] === '-') {
+            aliasingBranchName = aliasingBranchName.substring(0, branchNameExtendedLength-1)
           }
+
+          // Remove the stagingPrefix from the aliasHostname and use the extended aliasingBranchName
+          aliasHostname = `${projectName}-${aliasingBranchName}.vercel.app`;
         }
-        const aliasHostname = `${projectName}-${aliasingBranchName}-${stagingPrefix}.vercel.app`;
+
         deployURL = `https://${aliasHostname}`;
         vercel = tool(which("vercel", true));
         const vercelAliasArgs = [
