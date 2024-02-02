@@ -255,7 +255,7 @@ async function run() {
           // Calculate the maximum length of the branchName by removing the stagingPrefix and the dash
           const branchNameExtendedLength = branchNameAllowedLength+stagingPrefix.length+1;
 
-          let aliasingBranchName = escapedBranchName.substring(0, branchNameExtendedLength);;
+          let aliasingBranchName = escapedBranchName.substring(0, branchNameExtendedLength);
 
           // If, after truncation, the last character is a dash, remove it
           if (aliasingBranchName[branchNameExtendedLength] === '-') {
