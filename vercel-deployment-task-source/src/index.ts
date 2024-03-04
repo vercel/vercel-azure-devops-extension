@@ -258,8 +258,8 @@ async function run() {
           let aliasingBranchName = escapedBranchName.substring(0, branchNameExtendedLength);
 
           // If, after truncation, the last character is a dash, remove it
-          if (aliasingBranchName[branchNameExtendedLength] === '-') {
-            aliasingBranchName = aliasingBranchName.substring(0, branchNameExtendedLength-1)
+          if (aliasingBranchName.endsWith('-')) {
+            aliasingBranchName = aliasingBranchName.substring(0, aliasingBranchName.length - 1);
           }
 
           // Remove the stagingPrefix from the aliasHostname and use the extended aliasingBranchName
