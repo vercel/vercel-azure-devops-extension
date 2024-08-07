@@ -10,8 +10,8 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 2,
-    "Patch": 5
+    "Minor": 3,
+    "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -56,6 +56,13 @@
       "label": "Enable debug output",
       "required": false,
       "helpMarkDown": "Enable `--debug` output for the internal Vercel CLI operations."
+    },
+    {
+      "name": "archive",
+      "type": "boolean",
+      "label": "Enable compression of the deployment code into a single file before uploading it",
+      "required": false,
+      "helpMarkDown": "Enable `--archive=tgz` flag for the internal Vercel CLI operations."
     }
   ],
   "outputVariables": [
