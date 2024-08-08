@@ -129,6 +129,8 @@ async function run() {
 
     const debug = getBoolInput("debug");
 
+    const prIdDeploymentURL = getBoolInput("prIdDeploymentURL");
+
     const vercelProjectId = reconcileConfigurationInput(
       "vercelProjectId",
       "VERCEL_PROJECT_ID",
@@ -190,6 +192,15 @@ async function run() {
     if (debug) {
       vercelDeployArgs.push("--debug");
     }
+
+    let pullRequestId: string | undefined = undefined;
+    if (!deployToProduction && prIdDeploymentURL) {
+      pullRequestId = getVariable("System.PullRequest.PullRequestId");
+    }
+    if (pullRequestId) {
+      vercelDeployArgs.push(`--build-env devopsPullRequestId=${pullRequestId}`);
+    }
+
     const vercelDeploy = vercel.arg(vercelDeployArgs);
     ({ stdout, stderr, code } = vercelDeploy.execSync());
 
@@ -202,12 +213,14 @@ async function run() {
     let deployURL = stdout;
 
     if (!deployToProduction) {
+      let aliasHostname: string | undefined = undefined;
+
       // Get branch name
       // If triggered by a PR use `System.PullRequest.SourceBranch` (and replace the `refs/heads/`)
       // If not triggered by a PR use `Build.SourceBranchName`
       let branchName: string | undefined;
       const buildReason = getVariable("Build.Reason");
-      if (buildReason && buildReason === "PullRequest") {
+      if (buildReason === "PullRequest") {
         branchName = getVariable("System.PullRequest.SourceBranch");
         if (branchName) {
           branchName = branchName.replace("refs/heads/", "");
@@ -216,7 +229,7 @@ async function run() {
         branchName = getVariable("Build.SourceBranchName");
       }
 
-      if (branchName) {
+      if (!pullRequestId && branchName) {
         const [projectName, stagingPrefix] = await Promise.all([
           getProjectName(vercelProjectId, vercelOrgId, vercelToken),
           getStagingPrefix(vercelOrgId, vercelToken),
@@ -250,7 +263,7 @@ async function run() {
          */
         const branchNameAllowedLength =
           50 - projectName.length - stagingPrefix.length;
-        let aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
+        aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
 
         if (escapedBranchName.length > branchNameAllowedLength) {
           // Calculate the maximum length of the branchName by removing the stagingPrefix and the dash
@@ -273,7 +286,13 @@ async function run() {
           // Remove the stagingPrefix from the aliasHostname and use the extended aliasingBranchName
           aliasHostname = `${projectName}-${aliasingBranchName}.vercel.app`;
         }
+      } else if (buildReason === "PullRequest") {
+        const projectName = await getProjectName(vercelProjectId, vercelOrgId, vercelToken);
 
+        aliasHostname = `${projectName}-${pullRequestId}.vercel.app`;
+      }
+
+      if (aliasHostname) {
         deployURL = `https://${aliasHostname}`;
         vercel = tool(which("vercel", true));
         const vercelAliasArgs = [
