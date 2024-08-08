@@ -164,6 +164,16 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+- `archive`
+
+  Enable `--archive=tgz` flag for the internal Vercel CLI operations.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
 #### Outputs
 
 - `deploymentURL`
