@@ -10,8 +10,8 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 2,
-    "Patch": 5
+    "Minor": 3,
+    "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -56,6 +56,13 @@
       "label": "Enable debug output",
       "required": false,
       "helpMarkDown": "Enable `--debug` output for the internal Vercel CLI operations."
+    },
+    {
+      "name": "prIdDeploymentURL",
+      "type": "boolean",
+      "label": "Use DevOps pull request id to generate to generate preview deployment URLs",
+      "required": false,
+      "helpMarkDown": "Create a stable preview deployment alias from the DevOps pull request id and provide DevOps pull request id via `--build-env` flag to the internal Vercel CLI deploy operation."
     }
   ],
   "outputVariables": [
