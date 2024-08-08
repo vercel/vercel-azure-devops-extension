@@ -164,6 +164,16 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+- `prIdDeploymentURL`
+
+  Create a stable preview deployment alias from the DevOps pull request id and provide DevOps pull request id via `--build-env` flag to the internal Vercel CLI deploy operation.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
 #### Outputs
 
 - `deploymentURL`
