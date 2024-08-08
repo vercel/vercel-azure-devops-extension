@@ -46,7 +46,7 @@ async function run() {
               commentType: CommentType.System,
             },
           ],
-          status: CommentThreadStatus.Active,
+          status: CommentThreadStatus.Unknown,
         },
         repositoryId,
         parseInt(pullRequestId),
