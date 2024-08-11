@@ -47,11 +47,15 @@ async function getStagingPrefix(orgID: string, token: string): Promise<string> {
   return isTeam ? result.stagingPrefix : result.user.stagingPrefix;
 }
 
-async function getProjectName(
+// https://vercel.com/docs/rest-api/endpoints/projects#find-a-project-by-id-or-name-response
+type Framework = 'blitzjs' | 'nextjs' | 'gatsby' | 'remix' | 'astro' | 'hexo' | 'eleventy' | 'docusaurus-2' | 'docusaurus' | 'preact' | 'solidstart-1' | 'solidstart' | 'dojo' | 'ember' | 'vue' | 'scully' | 'ionic-angular' | 'angular' | 'polymer' | 'svelte' | 'sveltekit' | 'sveltekit-1' | 'ionic-react' | 'create-react-app' | 'gridsome' | 'umijs' | 'sapper' | 'saber' | 'stencil' | 'nuxtjs' | 'redwoodjs' | 'hugo' | 'jekyll' | 'brunch' | 'middleman' | 'zola' | 'hydrogen' | 'vite' | 'vitepress' | 'vuepress' | 'parcel' | 'fasthtml' | 'sanity' | 'storybook' | null;
+type Project = { autoExposeSystemEnvs: boolean; framework: Framework; name: string; }
+
+async function getProject(
   projectId: string,
   orgId: string,
   token: string
-): Promise<string> {
+): Promise<Project> {
   let apiURL = `https://api.vercel.com/v9/projects/${projectId}`;
   if (isTeamID(orgId)) {
     apiURL += `?teamId=${orgId}`;
@@ -72,7 +76,7 @@ async function getProjectName(
     );
   }
 
-  return result.name;
+  return result;
 }
 
 /**
@@ -195,6 +199,56 @@ async function run() {
     if (archive) {
       vercelDeployArgs.push("--archive=tgz");
     }
+
+    const project = await getProject(vercelProjectId, vercelOrgId, vercelToken)
+
+    // Get branch name
+    // If triggered by a PR use `System.PullRequest.SourceBranch` (and replace the `refs/heads/`)
+    // If not triggered by a PR use `Build.SourceBranchName`
+    let branchName: string | undefined;
+    const buildReason = getVariable("Build.Reason");
+    if (buildReason === "PullRequest") {
+      branchName = getVariable("System.PullRequest.SourceBranch");
+      if (branchName) {
+        branchName = branchName.replace("refs/heads/", "");
+      }
+    } else {
+      branchName = getVariable("Build.SourceBranchName");
+    }
+
+    // adding predefined DevOps variables which can be useful during build as env vars in a similiar style as the regular Vercel git integration would (replacing VERCEL with DEVOPS)
+    if (project.autoExposeSystemEnvs) {
+      const addEnvVar = (envVar: string) => {
+        vercelDeployArgs.push(`--build-env ${envVar}`);
+        vercelDeployArgs.push(`--env ${envVar}`);
+      }
+
+      const commitSha = getVariable("Build.SourceVersion");
+      const pullRequestId = getVariable("System.PullRequest.PullRequestId");
+      const teamProject = getVariable("System.TeamProject");
+      const teamProjectId = getVariable("System.TeamProjectId");
+
+      addEnvVar(`DEVOPS_GIT_COMMIT_SHA=${commitSha}`);
+      addEnvVar(`DEVOPS_GIT_COMMIT_REF=${branchName}`);
+      addEnvVar(`DEVOPS_GIT_PULL_REQUEST_ID=${pullRequestId}`);
+      addEnvVar(`DEVOPS_GIT_PROVIDER=devops`);
+      addEnvVar(`DEVOPS_GIT_REPO_ID=${teamProjectId}`);
+      addEnvVar(`DEVOPS_GIT_REPO_SLUG=${teamProject}`);
+
+      // adding framework specific vars as with regular integration (currently only Next.js is supported) https://vercel.com/docs/projects/environment-variables/system-environment-variables#framework-environment-variables 
+      switch (project.framework) {
+        case 'nextjs':
+          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_COMMIT_SHA=${commitSha}`);
+          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_COMMIT_REF=${branchName}`);
+          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_PULL_REQUEST_ID=${pullRequestId}`);
+          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_PROVIDER=devops`);
+          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_REPO_ID=${teamProjectId}`);
+          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_REPO_SLUG=${teamProject}`);
+          break;
+      }
+    }
+
+
     const vercelDeploy = vercel.arg(vercelDeployArgs);
     ({ stdout, stderr, code } = vercelDeploy.execSync());
 
@@ -207,25 +261,8 @@ async function run() {
     let deployURL = stdout;
 
     if (!deployToProduction) {
-      // Get branch name
-      // If triggered by a PR use `System.PullRequest.SourceBranch` (and replace the `refs/heads/`)
-      // If not triggered by a PR use `Build.SourceBranchName`
-      let branchName: string | undefined;
-      const buildReason = getVariable("Build.Reason");
-      if (buildReason && buildReason === "PullRequest") {
-        branchName = getVariable("System.PullRequest.SourceBranch");
-        if (branchName) {
-          branchName = branchName.replace("refs/heads/", "");
-        }
-      } else {
-        branchName = getVariable("Build.SourceBranchName");
-      }
-
       if (branchName) {
-        const [projectName, stagingPrefix] = await Promise.all([
-          getProjectName(vercelProjectId, vercelOrgId, vercelToken),
-          getStagingPrefix(vercelOrgId, vercelToken),
-        ]);
+        const stagingPrefix = await getStagingPrefix(vercelOrgId, vercelToken);
         const escapedBranchName = branchName.replace(/[^a-zA-Z0-9\-]-?/g, "-");
         /**
          * Truncating branch name according to RFC 1035 if necessary
@@ -233,7 +270,7 @@ async function run() {
          *
          * Read more: https://vercel.com/guides/why-is-my-vercel-deployment-url-being-shortened
          *
-         * projectName has a fixedLength `x`
+         * project.name has a fixedLength `x`
          * stagingPrefix has a fixedLenght `y`
          * .vercel.app has a fixedLength `11`
          * two dashes
@@ -254,8 +291,8 @@ async function run() {
          *    longer-project-name-feature-prefix-12346-my-second-f.vercel.app
          */
         const branchNameAllowedLength =
-          50 - projectName.length - stagingPrefix.length;
-        let aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
+          50 - project.name.length - stagingPrefix.length;
+        let aliasHostname = `${project.name}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
 
         if (escapedBranchName.length > branchNameAllowedLength) {
           // Calculate the maximum length of the branchName by removing the stagingPrefix and the dash
@@ -276,7 +313,7 @@ async function run() {
           }
 
           // Remove the stagingPrefix from the aliasHostname and use the extended aliasingBranchName
-          aliasHostname = `${projectName}-${aliasingBranchName}.vercel.app`;
+          aliasHostname = `${project.name}-${aliasingBranchName}.vercel.app`;
         }
 
         deployURL = `https://${aliasHostname}`;

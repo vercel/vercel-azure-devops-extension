@@ -6,6 +6,8 @@ This extension contains Azure Pipelines tasks for automatically deploying your A
   - [Extension Set Up](#extension-set-up)
   - [Basic Pipeline Set Up](#basic-pipeline-set-up)
   - [Full Featured Pipeline Set Up](#full-featured-pipeline-set-up)
+  - [Env Vars](#env-vars)
+    - [Available Env Vars](#available-env-vars)
   - [Extension Reference](#extension-reference)
     - [Task: `vercel-deployment-task`](#task-vercel-deployment-task)
     - [Task: `vercel-azdo-pr-comment-task`](#task-vercel-azdo-pr-comment-task)
@@ -91,6 +93,24 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
    - The `vercel-deployment-task` sets an output variable called `deploymentTaskMessage`. The reference `$(Deploy.deploymentTaskMessage)` comes from the `name: Deploy` on the `vercel-deployment-task` step.
 1. Push these changes to the repository, and set a [Build Policy](#azure-build-policy-set-up) for the `main` branch.
 1. Now create a new branch, push a commit, and open a PR against `main`. A new pipeline execution should trigger and it should create a preview deployment on Vercel as well as comment back on the PR with the preview URL.
+
+## Env Vars
+
+The extension provides a set of env vars if the option [Automatically exposing System Environment Variables](https://vercel.com/docs/projects/environment-variables/system-environment-variables) is enabled in the Project Settings. These vars are available in the build step and at run time.
+
+Based on the selected [Framework Preset](https://vercel.com/docs/deployments/configure-a-build#framework-preset) framework-specific env vars are set for the build step like with a [regular integration](https://vercel.com/docs/projects/environment-variables/system-environment-variables#framework-environment-variables).
+   > Note: This option is currently only available for Next.js.
+
+### Available Env Vars
+
+| DevOps Variable                                        | Generic                     | Next.js                                |
+| ------------------------------------------------------ | --------------------------- | -------------------------------------- |
+| Build.SourceVersion                                    | DEVOPS_GIT_COMMIT_SHA       | NEXT_PUBLIC_DEVOPS_GIT_COMMIT_SHA      |
+| System.PullRequest.SourceBranch/Build.SourceBranchName | DEVOPS_GIT_COMMIT_REF       | NEXT_PUBLIC_DEVOPS_GIT_COMMIT_REF      |
+| System.PullRequest.PullRequestId                       | DEVOPS_GIT_PULL_REQUEST_ID  | NEXT_PUBLIC_DEVOPS_GIT_PULL_REQUEST_ID |
+| "devops"                                               | DEVOPS_GIT_PROVIDER         | NEXT_PUBLIC_DEVOPS_GIT_PROVIDER        |
+| System.TeamProjectId                                   | DEVOPS_GIT_REPO_ID          | NEXT_PUBLIC_DEVOPS_GIT_REPO_ID         |
+| System.TeamProject                                     | DEVOPS_GIT_REPO_SLUG        | NEXT_PUBLIC_DEVOPS_GIT_REPO_SLUG       |
 
 ## Extension Reference
 
