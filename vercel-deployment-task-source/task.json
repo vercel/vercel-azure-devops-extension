@@ -10,7 +10,7 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 3,
+    "Minor": 4,
     "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
@@ -63,6 +63,13 @@
       "label": "Enable compression of the deployment code into a single file before uploading it",
       "required": false,
       "helpMarkDown": "Enable `--archive=tgz` flag for the internal Vercel CLI operations."
+    },
+    {
+      "name": "logs",
+      "type": "boolean",
+      "label": "Enable build log output in the pipeline",
+      "required": false,
+      "helpMarkDown": "Enable `--logs` flag for the internal Vercel CLI operations."
     }
   ],
   "outputVariables": [

@@ -174,6 +174,16 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+- `logs`
+
+  Enable `--logs` flag for the internal Vercel CLI operations.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
 #### Outputs
 
 - `deploymentURL`
