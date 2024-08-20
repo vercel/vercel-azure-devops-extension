@@ -182,6 +182,12 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Type: `string`
 
+- `originalDeploymentURL`
+
+  Original URL of the deployment. Can be used to create your own alias in a separate task.
+
+  Type: `string`
+
 - `deploymentTaskMessage`
 
   The output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task.
