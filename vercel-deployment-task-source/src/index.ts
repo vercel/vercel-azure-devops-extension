@@ -258,7 +258,8 @@ async function run() {
       );
     }
 
-    let deployURL = stdout;
+    const originalDeployURL = stdout;
+    let deployURL = originalDeployURL;
 
     if (!deployToProduction) {
       if (branchName) {
@@ -342,6 +343,7 @@ async function run() {
       }
     }
 
+    setVariable("originalDeploymentURL", originalDeployURL, false, true);
     setVariable("deploymentURL", deployURL, false, true);
     const message = `Successfully deployed to ${deployURL}`;
     setVariable("deploymentTaskMessage", message, false, true);
