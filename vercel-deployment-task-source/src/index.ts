@@ -201,10 +201,10 @@ async function run() {
     if (archive) {
       vercelDeployArgs.push("--archive=tgz");
     }
-    
+
     if (logs) {
       vercelDeployArgs.push("--logs");
-    }    
+    }
 
     const project = await getProject(vercelProjectId, vercelOrgId, vercelToken)
 
@@ -244,12 +244,12 @@ async function run() {
       // adding framework specific vars as with regular integration (currently only Next.js is supported) https://vercel.com/docs/projects/environment-variables/system-environment-variables#framework-environment-variables 
       switch (project.framework) {
         case 'nextjs':
-          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_COMMIT_SHA=${commitSha}`);
-          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_COMMIT_REF=${branchName}`);
-          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_PULL_REQUEST_ID=${pullRequestId}`);
-          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_PROVIDER=devops`);
-          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_REPO_ID=${teamProjectId}`);
-          vercelDeployArgs.push(`--build-env NEXT_PUBLIC_DEVOPS_GIT_REPO_SLUG=${teamProject}`);
+          vercelDeployArgs.push('--build-env', `NEXT_PUBLIC_DEVOPS_GIT_COMMIT_SHA=${commitSha}`);
+          vercelDeployArgs.push('--build-env', `NEXT_PUBLIC_DEVOPS_GIT_COMMIT_REF=${branchName}`);
+          vercelDeployArgs.push('--build-env', `NEXT_PUBLIC_DEVOPS_GIT_PULL_REQUEST_ID=${pullRequestId}`);
+          vercelDeployArgs.push('--build-env', `NEXT_PUBLIC_DEVOPS_GIT_PROVIDER=devops`);
+          vercelDeployArgs.push('--build-env', `NEXT_PUBLIC_DEVOPS_GIT_REPO_ID=${teamProjectId}`);
+          vercelDeployArgs.push('--build-env', `NEXT_PUBLIC_DEVOPS_GIT_REPO_SLUG=${teamProject}`);
           break;
       }
     }
