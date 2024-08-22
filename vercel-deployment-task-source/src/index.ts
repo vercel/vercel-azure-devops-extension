@@ -225,8 +225,8 @@ async function run() {
     // adding predefined DevOps variables which can be useful during build as env vars in a similiar style as the regular Vercel git integration would (replacing VERCEL with DEVOPS)
     if (project.autoExposeSystemEnvs) {
       const addEnvVar = (envVar: string) => {
-        vercelDeployArgs.push(`--build-env ${envVar}`);
-        vercelDeployArgs.push(`--env ${envVar}`);
+        vercelDeployArgs.push('--build-env', envVar);
+        vercelDeployArgs.push('--env', envVar);
       }
 
       const commitSha = getVariable("Build.SourceVersion");
