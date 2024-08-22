@@ -78,6 +78,10 @@
       "description": "The URL of the deployment."
     },
     {
+      "name": "originalDeploymentURL",
+      "description": "Original URL of the deployment. Can be used to create your own alias in a separate task."
+    },
+    {
       "name": "deploymentTaskMessage",
       "description": "The message output from the deployment. Can be passed to Vercel Azure DevOps Pull Request Comment Task."
     }
