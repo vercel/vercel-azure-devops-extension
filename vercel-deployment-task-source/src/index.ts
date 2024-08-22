@@ -131,6 +131,8 @@ async function run() {
 
     const archive = getBoolInput("archive");
 
+    const logs = getBoolInput("logs");
+
     const vercelProjectId = reconcileConfigurationInput(
       "vercelProjectId",
       "VERCEL_PROJECT_ID",
@@ -191,6 +193,9 @@ async function run() {
     }
     if (debug) {
       vercelDeployArgs.push("--debug");
+    }
+    if (logs) {
+      vercelDeployArgs.push("--logs");
     }
     if (archive) {
       vercelDeployArgs.push("--archive=tgz");
