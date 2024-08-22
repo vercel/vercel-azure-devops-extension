@@ -135,6 +135,8 @@ async function run() {
 
     const archive = getBoolInput("archive");
 
+    const logs = getBoolInput("logs");
+
     const vercelProjectId = reconcileConfigurationInput(
       "vercelProjectId",
       "VERCEL_PROJECT_ID",
@@ -199,6 +201,10 @@ async function run() {
     if (archive) {
       vercelDeployArgs.push("--archive=tgz");
     }
+    
+    if (logs) {
+      vercelDeployArgs.push("--logs");
+    }    
 
     const project = await getProject(vercelProjectId, vercelOrgId, vercelToken)
 
@@ -247,7 +253,6 @@ async function run() {
           break;
       }
     }
-
 
     const vercelDeploy = vercel.arg(vercelDeployArgs);
     ({ stdout, stderr, code } = vercelDeploy.execSync());
