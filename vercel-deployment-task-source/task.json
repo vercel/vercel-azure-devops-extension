@@ -10,7 +10,7 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 3,
+    "Minor": 6,
     "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
