@@ -174,6 +174,22 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+- `env`
+
+  Adding enviroment variables at runtime utilizing Vercel CLI's `--env` option.
+
+  Type: `string`
+
+  Required: `false`
+
+- `buildEnv`
+
+  Adding build enviroment variables to the build step utilizing Vercel CLI's `--build-env` option.
+
+  Type: `string`
+
+  Required: `false`
+
 - `logs`
 
   Enable `--logs` flag for the internal Vercel CLI operations.

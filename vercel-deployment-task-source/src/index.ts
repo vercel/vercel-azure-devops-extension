@@ -1,5 +1,6 @@
 import {
   getInput,
+  getDelimitedInput,
   getBoolInput,
   TaskResult,
   setResult,
@@ -131,6 +132,9 @@ async function run() {
 
     const archive = getBoolInput("archive");
 
+    const envs = getDelimitedInput("env", "\n", false);
+    const buildEnvs = getDelimitedInput("buildEnv", "\n", false);
+
     const logs = getBoolInput("logs");
 
     const vercelProjectId = reconcileConfigurationInput(
@@ -200,6 +204,14 @@ async function run() {
     if (archive) {
       vercelDeployArgs.push("--archive=tgz");
     }
+
+    envs.forEach((env) => {
+      vercelDeployArgs.push("--env", env);
+    });
+    buildEnvs.forEach((buildEnv) => {
+      vercelDeployArgs.push("--build-env", buildEnv);
+    });
+
     const vercelDeploy = vercel.arg(vercelDeployArgs);
     ({ stdout, stderr, code } = vercelDeploy.execSync());
 
