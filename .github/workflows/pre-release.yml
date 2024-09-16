@@ -40,7 +40,7 @@ jobs:
 
       - name: Set to preview version
         run: |
-          jq '. += { "id": "vercel-deployment-extension-preview", "public": false, "galleryFlags": ["Preview"] }' vss-extension.json > temp.json \
+          jq '. += { "id": "vercel-deployment-extension-preview", "name": "Vercel Deployment Extension (Preview)", "public": false, "galleryFlags": ["Preview"] }' vss-extension.json > temp.json \
           && mv temp.json vss-extension.json \
           && pnpm exec prettier --write vss-extension.json
           echo "Updated vss-extension.json"
