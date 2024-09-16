@@ -2,9 +2,6 @@ name: "Build and Publish Vercel Deployment Extension"
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   build-and-publish:
