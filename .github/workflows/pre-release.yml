@@ -1,0 +1,62 @@
+name: "Publish Preview"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8.3.1
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Set to preview version
+        run: |
+          # Update vss-extension.json to set it to preview version
+          jq '. += { "id": "vercel-deployment-extension-preview", "name": "Vercel Deployment Extension (Preview)", "public": false, "galleryFlags": ["Preview"] }' vss-extension.json > temp.json \
+          && mv temp.json vss-extension.json \
+
+          # Update vercel-deployment-task-source/task.json to set it to preview version
+          jq '.id = "e56d47c0-6789-4b3c-9563-7a66f7b2066f" | .name |= . + "-preview" | .friendlyName |= . + " (Preview)"' vercel-deployment-task-source/task.json > temp.json \
+          && mv temp.json vercel-deployment-task-source/task.json \
+
+          # Update vercel-azdo-pr-comment-task-source/task.json to set it to preview version
+          jq '.id = "E0AE50D0-C1B0-4F2F-BC25-F821A3E081E1" | .name |= . + "-preview" | .friendlyName |= . + " (Preview)"' vercel-azdo-pr-comment-task-source/task.json > temp.json \
+          && mv temp.json vercel-azdo-pr-comment-task-source/task.json \
+
+          # Format the updated files using Prettier
+          pnpm exec prettier --write vss-extension.json vercel-deployment-task-source/task.json vercel-azdo-pr-comment-task-source/task.json
+          echo "Updated vss-extension.json"
+
+      - name: Build and Publish
+        run: pnpm -C scripts build-and-publish
+        env:
+          AZURE_TOKEN: ${{ secrets.AZURE_TOKEN }}
