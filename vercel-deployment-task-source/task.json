@@ -11,7 +11,7 @@
   "version": {
     "Major": 1,
     "Minor": 6,
-    "Patch": 1
+    "Patch": 2
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -63,6 +63,28 @@
       "label": "Enable compression of the deployment code into a single file before uploading it",
       "required": false,
       "helpMarkDown": "Enable `--archive=tgz` flag for the internal Vercel CLI operations."
+    },
+    {
+      "name": "env",
+      "type": "multiLine",
+      "properties": {
+        "resizable": true,
+        "rows": "2"
+      },
+      "label": "Env vars",
+      "required": false,
+      "helpMarkDown": "Additional environment variables to be provided at runtime. One line per env (e.g. KEY1=value1)."
+    },
+    {
+      "name": "buildEnv",
+      "type": "multiLine",
+      "properties": {
+        "resizable": true,
+        "rows": "2"
+      },
+      "label": "Build env vars",
+      "required": false,
+      "helpMarkDown": "Additional environment variables to be provided during build. One line per env (e.g. KEY1=value1)."
     },
     {
       "name": "logs",
