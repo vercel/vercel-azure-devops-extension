@@ -11,7 +11,7 @@
   "version": {
     "Major": 1,
     "Minor": 6,
-    "Patch": 2
+    "Patch": 3
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -98,6 +98,10 @@
     {
       "name": "deploymentURL",
       "description": "The URL of the deployment."
+    },
+    {
+      "name": "originalDeploymentURL",
+      "description": "Original URL of the deployment. Can be used to create your own alias in a separate task."
     },
     {
       "name": "deploymentTaskMessage",

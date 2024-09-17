@@ -221,6 +221,7 @@ async function run() {
       );
     }
 
+    const originalDeployURL = stdout;
     let deployURL = stdout;
 
     if (!deployToProduction) {
@@ -322,6 +323,7 @@ async function run() {
       }
     }
 
+    setVariable("originalDeploymentURL", originalDeployURL, false, true);
     setVariable("deploymentURL", deployURL, false, true);
     const message = `Successfully deployed to ${deployURL}`;
     setVariable("deploymentTaskMessage", message, false, true);
