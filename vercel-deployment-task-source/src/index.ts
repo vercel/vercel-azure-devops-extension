@@ -105,23 +105,23 @@ function reconcileConfigurationInput(
     );
   }
 
-  if (!envVarValue) {
-    if (!inputValue) {
-      if (!defaultValue) {
-        throw new Error(
-          `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
-        );
-      }
-
-      setVariable(envVarKey, defaultValue);
-      return defaultValue;
-    }
-
+  if (inputValue) {
     setVariable(envVarKey, inputValue);
     return inputValue;
   }
 
-  return envVarValue;
+  if (envVarValue) {
+    return envVarValue;
+  }
+
+  if (defaultValue) {
+    setVariable(envVarKey, defaultValue);
+    return defaultValue;
+  }
+
+  throw new Error(
+    `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
+  );
 }
 
 async function run() {
