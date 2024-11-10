@@ -27,7 +27,7 @@
       "type": "string",
       "label": "Vercel Org ID",
       "required": false,
-      "helpMarkDown": "The ID of your Vercel Org. Can also be set as the environment variable `VERCEL_ORG_ID`."
+      "helpMarkDown": "The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`. Can also be set as the environment variable `VERCEL_ORG_ID`."
     },
     {
       "name": "vercelToken",

@@ -55,7 +55,7 @@ This short guide will demonstrate how the extension can be used to automatically
        name: Deploy
        inputs:
          vercelProjectId: "<project-id>"
-         vercelOrgId: "<org-id>"
+         vercelOrgId: "<team-id>"
          vercelToken: "<vercel-token>" # '$(VERCEL_TOKEN)'
          production: true
    ```
@@ -114,7 +114,7 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
 - `vercelOrgId`
 
-  The ID of your Vercel Org.
+  The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`.
 
   Can alternatively be set as the environment variable `VERCEL_ORG_ID`.
 
