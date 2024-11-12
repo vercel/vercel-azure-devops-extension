@@ -20,17 +20,12 @@ function errorHandler(error: unknown) {
 process.on("unhandledRejection", errorHandler);
 process.on("unhandledException", errorHandler);
 
-function isTeamID(orgID: string) {
-  return orgID.startsWith("team_");
+function isTeamID(teamId: string) {
+  return teamId.startsWith("team_");
 }
 
-async function getStagingPrefix(orgID: string, token: string): Promise<string> {
-  const isTeam = isTeamID(orgID);
-  const apiURL = isTeam
-    ? `https://api.vercel.com/v2/teams/${orgID}`
-    : `https://api.vercel.com/v2/user`;
-
-  const { statusCode, body } = await request(apiURL, {
+async function getStagingPrefix(teamId: string, token: string): Promise<string> {
+  const { statusCode, body } = await request(`https://api.vercel.com/v2/teams/${teamId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -45,20 +40,15 @@ async function getStagingPrefix(orgID: string, token: string): Promise<string> {
     );
   }
 
-  return isTeam ? result.stagingPrefix : result.user.stagingPrefix;
+  return result.stagingPrefix;
 }
 
 async function getProjectName(
   projectId: string,
-  orgId: string,
+  teamId: string,
   token: string
 ): Promise<string> {
-  let apiURL = `https://api.vercel.com/v9/projects/${projectId}`;
-  if (isTeamID(orgId)) {
-    apiURL += `?teamId=${orgId}`;
-  }
-
-  const { statusCode, body } = await request(apiURL, {
+  const { statusCode, body } = await request(`https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -144,11 +134,23 @@ async function run() {
       "VERCEL_PROJECT_ID",
       "Vercel Project Id"
     );
-    const vercelOrgId = reconcileConfigurationInput(
-      "vercelOrgId",
-      "VERCEL_ORG_ID",
-      "Vercel Org Id"
+
+    let vercelTeamId = reconcileConfigurationInput(
+      "vercelTeamId",
+      "VERCEL_TEAM_ID",
+      "Vercel Team Id"
     );
+
+    if (!vercelTeamId) {
+      console.warn('Please set \'vercelTeamId\'. \'vercelOrgId\' is deprecated.');
+
+      vercelTeamId = reconcileConfigurationInput(
+        "vercelOrgId",
+        "VERCEL_ORG_ID",
+        "Vercel Org Id"
+      );
+    }
+
     const vercelToken = reconcileConfigurationInput(
       "vercelToken",
       "VERCEL_TOKEN",
@@ -166,6 +168,14 @@ async function run() {
 
     const VERCEL_CLI_VERSION =
       getVariable("VERCEL_CLI_VERSION") ?? "vercel@latest";
+
+    if (!isTeamID(vercelTeamId) && !deployToProduction) {
+      throw new Error('Usage of a Personal Vercel ID is deprecated as it breaks Preview Deployments. Exchange your Personal Vercel ID with the Team ID your Project is associated with. The Team ID starts with \'team_\'');
+    }
+
+    if (!isTeamID(vercelTeamId)) {
+      console.warn('Usage of a Personal Vercel ID is deprecated. Consider switching to using your Team ID (starts with \'team_\') instead.')
+    }
 
     const npm = tool(which("npm", true));
     const npmInstall = npm.arg(["install", "-g", VERCEL_CLI_VERSION]);
@@ -246,8 +256,8 @@ async function run() {
 
       if (branchName) {
         const [projectName, stagingPrefix] = await Promise.all([
-          getProjectName(vercelProjectId, vercelOrgId, vercelToken),
-          getStagingPrefix(vercelOrgId, vercelToken),
+          getProjectName(vercelProjectId, vercelTeamId, vercelToken),
+          getStagingPrefix(vercelTeamId, vercelToken),
         ]);
         const escapedBranchName = branchName.replace(/[^a-zA-Z0-9\-]-?/g, "-");
         const escapedProjectName = projectName.replace(
@@ -313,7 +323,7 @@ async function run() {
           stdout,
           aliasHostname,
           `--token=${vercelToken}`,
-          `--scope=${vercelOrgId}`,
+          `--scope=${vercelTeamId}`,
         ];
         if (debug) {
           vercelAliasArgs.push("--debug");

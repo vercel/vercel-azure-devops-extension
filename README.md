@@ -55,7 +55,7 @@ This short guide will demonstrate how the extension can be used to automatically
        name: Deploy
        inputs:
          vercelProjectId: "<project-id>"
-         vercelOrgId: "<team-id>"
+         vercelTeamId: "<team-id>"
          vercelToken: "<vercel-token>" # '$(VERCEL_TOKEN)'
          production: true
    ```
@@ -98,7 +98,7 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
 
 An Azure Pipelines Task Extension for automatically deploying to Vercel.
 
-The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can all be replaced with environment variables. See their respective property sections for more details.
+The configuration inputs `vercelProjectID`, `vercelTeamId`, and `vercelToken` can all be replaced with environment variables. See their respective property sections for more details.
 
 #### Properties
 
@@ -112,11 +112,11 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
-- `vercelOrgId`
+- `vercelTeamId`
 
   The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`.
 
-  Can alternatively be set as the environment variable `VERCEL_ORG_ID`.
+  Can alternatively be set as the environment variable `VERCEL_TEAM_ID`.
 
   Type: `string`
 
