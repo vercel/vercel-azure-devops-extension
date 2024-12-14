@@ -154,6 +154,16 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+- `target`
+
+  Option to define the environment you want to deploy to. This could be production, preview, or a custom environment. For more information, see [Using an environment through the Vercel CLI](https://vercel.com/docs/deployments/custom-environments#using-an-environment-through-the-vercel-cli).
+
+  Type: `string`
+
+  Default: `false`
+
+  Required: `false`
+
 - `debug`
 
   Enable `--debug` output for the internal Vercel CLI operations.
