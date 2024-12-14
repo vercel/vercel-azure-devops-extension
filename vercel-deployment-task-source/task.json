@@ -10,8 +10,8 @@
   "author": "Vercel",
   "version": {
     "Major": 1,
-    "Minor": 6,
-    "Patch": 5
+    "Minor": 7,
+    "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -49,6 +49,13 @@
       "label": "Deploy to Production",
       "required": false,
       "helpMarkDown": "Should the task deploy to production? Defaults to false"
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "label": "Environment to deploy to",
+      "required": false,
+      "helpMarkDown": "Option to define the environment you want to deploy to. This could be production, preview, or a custom environment. For more information, see [Using an environment through the Vercel CLI](https://vercel.com/docs/deployments/custom-environments#using-an-environment-through-the-vercel-cli)."
     },
     {
       "name": "debug",
