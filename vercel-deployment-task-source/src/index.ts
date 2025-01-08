@@ -128,6 +128,8 @@ async function run() {
   try {
     setResourcePath(path.join(__dirname, "..", "task.json"));
 
+    const target = getInput("target");
+
     const debug = getBoolInput("debug");
 
     const archive = getBoolInput("archive");
@@ -194,6 +196,9 @@ async function run() {
       : ["deploy", `--token=${vercelToken}`];
     if (vercelCurrentWorkingDirectory) {
       vercelDeployArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
+    }
+    if (target) {
+      vercelDeployArgs.push(`--target=${target}`);
     }
     if (debug) {
       vercelDeployArgs.push("--debug");
