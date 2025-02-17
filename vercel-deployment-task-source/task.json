@@ -9,8 +9,8 @@
   "category": "Azure Pipelines",
   "author": "Vercel",
   "version": {
-    "Major": 1,
-    "Minor": 7,
+    "Major": 2,
+    "Minor": 0,
     "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
@@ -23,11 +23,11 @@
       "helpMarkDown": "The ID of your Vercel Project. Can also be set as the environment variable `VERCEL_PROJECT_ID`."
     },
     {
-      "name": "vercelOrgId",
+      "name": "vercelTeamId",
       "type": "string",
-      "label": "Vercel Org ID",
+      "label": "Vercel Team ID",
       "required": false,
-      "helpMarkDown": "The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`. Can also be set as the environment variable `VERCEL_ORG_ID`."
+      "helpMarkDown": "The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`. Can also be set as the environment variable `VERCEL_TEAM_ID`."
     },
     {
       "name": "vercelToken",
