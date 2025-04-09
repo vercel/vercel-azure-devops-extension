@@ -4,8 +4,8 @@ contact_links:
     url: https://vercel.com/help
     about: Reach out to our support team
   - name: Feature Request
-    url: https://vercel.community
+    url: https://community.vercel.com
     about: Share ideas for new features
   - name: Ask a Question
-    url: https://vercel.community/c/help/
+    url: https://community.vercel.com/c/help/
     about: Ask the community for help
