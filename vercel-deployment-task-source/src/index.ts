@@ -1,5 +1,6 @@
 import {
   getInput,
+  getDelimitedInput,
   getBoolInput,
   TaskResult,
   setResult,
@@ -19,17 +20,12 @@ function errorHandler(error: unknown) {
 process.on("unhandledRejection", errorHandler);
 process.on("unhandledException", errorHandler);
 
-function isTeamID(orgID: string) {
-  return orgID.startsWith("team_");
+function isTeamID(teamId: string) {
+  return teamId.startsWith("team_");
 }
 
-async function getStagingPrefix(orgID: string, token: string): Promise<string> {
-  const isTeam = isTeamID(orgID);
-  const apiURL = isTeam
-    ? `https://api.vercel.com/v2/teams/${orgID}`
-    : `https://api.vercel.com/v2/user`;
-
-  const { statusCode, body } = await request(apiURL, {
+async function getStagingPrefix(teamId: string, token: string): Promise<string> {
+  const { statusCode, body } = await request(`https://api.vercel.com/v2/teams/${teamId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -44,20 +40,15 @@ async function getStagingPrefix(orgID: string, token: string): Promise<string> {
     );
   }
 
-  return isTeam ? result.stagingPrefix : result.user.stagingPrefix;
+  return result.stagingPrefix;
 }
 
 async function getProjectName(
   projectId: string,
-  orgId: string,
+  teamId: string,
   token: string
 ): Promise<string> {
-  let apiURL = `https://api.vercel.com/v9/projects/${projectId}`;
-  if (isTeamID(orgId)) {
-    apiURL += `?teamId=${orgId}`;
-  }
-
-  const { statusCode, body } = await request(apiURL, {
+  const { statusCode, body } = await request(`https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -104,41 +95,62 @@ function reconcileConfigurationInput(
     );
   }
 
-  if (!envVarValue) {
-    if (!inputValue) {
-      if (!defaultValue) {
-        throw new Error(
-          `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
-        );
-      }
-
-      setVariable(envVarKey, defaultValue);
-      return defaultValue;
-    }
-
+  if (inputValue) {
     setVariable(envVarKey, inputValue);
     return inputValue;
   }
 
-  return envVarValue;
+  if (envVarValue) {
+    return envVarValue;
+  }
+
+  if (defaultValue) {
+    setVariable(envVarKey, defaultValue);
+    return defaultValue;
+  }
+
+  throw new Error(
+    `${name} must be specified using input \`${inputKey}\` or environment variable \`${envVarKey}\``
+  );
 }
 
 async function run() {
   try {
     setResourcePath(path.join(__dirname, "..", "task.json"));
 
+    const target = getInput("target");
+
     const debug = getBoolInput("debug");
+
+    const archive = getBoolInput("archive");
+
+    const envs = getDelimitedInput("env", "\n", false);
+    const buildEnvs = getDelimitedInput("buildEnv", "\n", false);
+
+    const logs = getBoolInput("logs");
 
     const vercelProjectId = reconcileConfigurationInput(
       "vercelProjectId",
       "VERCEL_PROJECT_ID",
       "Vercel Project Id"
     );
-    const vercelOrgId = reconcileConfigurationInput(
-      "vercelOrgId",
-      "VERCEL_ORG_ID",
-      "Vercel Org Id"
+
+    let vercelTeamId = reconcileConfigurationInput(
+      "vercelTeamId",
+      "VERCEL_TEAM_ID",
+      "Vercel Team Id"
     );
+
+    if (!vercelTeamId) {
+      console.warn('Please set \'vercelTeamId\'. \'vercelOrgId\' is deprecated.');
+
+      vercelTeamId = reconcileConfigurationInput(
+        "vercelOrgId",
+        "VERCEL_ORG_ID",
+        "Vercel Org Id"
+      );
+    }
+
     const vercelToken = reconcileConfigurationInput(
       "vercelToken",
       "VERCEL_TOKEN",
@@ -156,6 +168,14 @@ async function run() {
 
     const VERCEL_CLI_VERSION =
       getVariable("VERCEL_CLI_VERSION") ?? "vercel@latest";
+
+    if (!isTeamID(vercelTeamId) && !deployToProduction) {
+      throw new Error('Usage of a Personal Vercel ID is deprecated as it breaks Preview Deployments. Exchange your Personal Vercel ID with the Team ID your Project is associated with. The Team ID starts with \'team_\'');
+    }
+
+    if (!isTeamID(vercelTeamId)) {
+      console.warn('Usage of a Personal Vercel ID is deprecated. Consider switching to using your Team ID (starts with \'team_\') instead.')
+    }
 
     const npm = tool(which("npm", true));
     const npmInstall = npm.arg(["install", "-g", VERCEL_CLI_VERSION]);
@@ -187,9 +207,26 @@ async function run() {
     if (vercelCurrentWorkingDirectory) {
       vercelDeployArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
     }
+    if (target) {
+      vercelDeployArgs.push(`--target=${target}`);
+    }
     if (debug) {
       vercelDeployArgs.push("--debug");
     }
+    if (logs) {
+      vercelDeployArgs.push("--logs");
+    }
+    if (archive) {
+      vercelDeployArgs.push("--archive=tgz");
+    }
+
+    envs.forEach((env) => {
+      vercelDeployArgs.push("--env", env);
+    });
+    buildEnvs.forEach((buildEnv) => {
+      vercelDeployArgs.push("--build-env", buildEnv);
+    });
+
     const vercelDeploy = vercel.arg(vercelDeployArgs);
     ({ stdout, stderr, code } = vercelDeploy.execSync());
 
@@ -199,6 +236,7 @@ async function run() {
       );
     }
 
+    const originalDeployURL = stdout;
     let deployURL = stdout;
 
     if (!deployToProduction) {
@@ -218,10 +256,14 @@ async function run() {
 
       if (branchName) {
         const [projectName, stagingPrefix] = await Promise.all([
-          getProjectName(vercelProjectId, vercelOrgId, vercelToken),
-          getStagingPrefix(vercelOrgId, vercelToken),
+          getProjectName(vercelProjectId, vercelTeamId, vercelToken),
+          getStagingPrefix(vercelTeamId, vercelToken),
         ]);
         const escapedBranchName = branchName.replace(/[^a-zA-Z0-9\-]-?/g, "-");
+        const escapedProjectName = projectName.replace(
+          /[^a-zA-Z0-9\-]-?/g,
+          "-"
+        );
         /**
          * Truncating branch name according to RFC 1035 if necessary
          * Maximum length is 63 characters.
@@ -249,8 +291,8 @@ async function run() {
          *    longer-project-name-feature-prefix-12346-my-second-f.vercel.app
          */
         const branchNameAllowedLength =
-          50 - projectName.length - stagingPrefix.length;
-        let aliasHostname = `${projectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
+          50 - escapedProjectName.length - stagingPrefix.length;
+        let aliasHostname = `${escapedProjectName}-${escapedBranchName}-${stagingPrefix}.vercel.app`;
 
         if (escapedBranchName.length > branchNameAllowedLength) {
           // Calculate the maximum length of the branchName by removing the stagingPrefix and the dash
@@ -271,7 +313,7 @@ async function run() {
           }
 
           // Remove the stagingPrefix from the aliasHostname and use the extended aliasingBranchName
-          aliasHostname = `${projectName}-${aliasingBranchName}.vercel.app`;
+          aliasHostname = `${escapedProjectName}-${aliasingBranchName}.vercel.app`;
         }
 
         deployURL = `https://${aliasHostname}`;
@@ -281,7 +323,7 @@ async function run() {
           stdout,
           aliasHostname,
           `--token=${vercelToken}`,
-          `--scope=${vercelOrgId}`,
+          `--scope=${vercelTeamId}`,
         ];
         if (debug) {
           vercelAliasArgs.push("--debug");
@@ -300,6 +342,7 @@ async function run() {
       }
     }
 
+    setVariable("originalDeploymentURL", originalDeployURL, false, true);
     setVariable("deploymentURL", deployURL, false, true);
     const message = `Successfully deployed to ${deployURL}`;
     setVariable("deploymentTaskMessage", message, false, true);

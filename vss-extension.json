@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "vercel-deployment-extension",
   "name": "Vercel Deployment Extension",
-  "version": "1.2.5",
+  "version": "2.0.0",
   "publisher": "Vercel",
   "public": true,
   "targets": [
@@ -12,7 +12,9 @@
     }
   ],
   "description": "An Azure Pipelines Task Extension for automatically deploying to Vercel",
-  "categories": ["Azure Pipelines"],
+  "categories": [
+    "Azure Pipelines"
+  ],
   "content": {
     "details": {
       "path": "README.md"
@@ -48,7 +50,9 @@
     {
       "id": "vercel-deployment-task",
       "type": "ms.vss-distributed-task.task",
-      "targets": ["ms.vss-distributed-task.tasks"],
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
       "properties": {
         "name": "vercel-deployment-task"
       }
@@ -56,7 +60,9 @@
     {
       "id": "vercel-azdo-pr-comment-task",
       "type": "ms.vss-distributed-task.task",
-      "targets": ["ms.vss-distributed-task.tasks"],
+      "targets": [
+        "ms.vss-distributed-task.tasks"
+      ],
       "properties": {
         "name": "vercel-azdo-pr-comment-task"
       }

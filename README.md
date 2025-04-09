@@ -55,7 +55,7 @@ This short guide will demonstrate how the extension can be used to automatically
        name: Deploy
        inputs:
          vercelProjectId: "<project-id>"
-         vercelOrgId: "<org-id>"
+         vercelTeamId: "<team-id>"
          vercelToken: "<vercel-token>" # '$(VERCEL_TOKEN)'
          production: true
    ```
@@ -98,7 +98,7 @@ This guide will demonstrate how to improve the [Basic Pipeline Set Up](#basic-pi
 
 An Azure Pipelines Task Extension for automatically deploying to Vercel.
 
-The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can all be replaced with environment variables. See their respective property sections for more details.
+The configuration inputs `vercelProjectID`, `vercelTeamId`, and `vercelToken` can all be replaced with environment variables. See their respective property sections for more details.
 
 #### Properties
 
@@ -112,11 +112,11 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
-- `vercelOrgId`
+- `vercelTeamId`
 
-  The ID of your Vercel Org.
+  The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`.
 
-  Can alternatively be set as the environment variable `VERCEL_ORG_ID`.
+  Can alternatively be set as the environment variable `VERCEL_TEAM_ID`.
 
   Type: `string`
 
@@ -154,9 +154,55 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 
   Required: `false`
 
+- `target`
+
+  Option to define the environment you want to deploy to. This could be production, preview, or a custom environment. For more information, see [Using an environment through the Vercel CLI](https://vercel.com/docs/deployments/custom-environments#using-an-environment-through-the-vercel-cli).
+
+  Type: `string`
+
+  Default: `false`
+
+  Required: `false`
+
 - `debug`
 
   Enable `--debug` output for the internal Vercel CLI operations.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
+- `archive`
+
+  Enable `--archive=tgz` flag for the internal Vercel CLI operations.
+
+  Type: `boolean`
+
+  Default: `false`
+
+  Required: `false`
+
+- `env`
+
+  Adding enviroment variables at runtime utilizing Vercel CLI's `--env` option.
+
+  Type: `string`
+
+  Required: `false`
+
+- `buildEnv`
+
+  Adding build enviroment variables to the build step utilizing Vercel CLI's `--build-env` option.
+
+  Type: `string`
+
+  Required: `false`
+
+- `logs`
+
+  Enable `--logs` flag for the internal Vercel CLI operations.
 
   Type: `boolean`
 
@@ -169,6 +215,12 @@ The configuration inputs `vercelProjectID`, `vercelOrgID`, and `vercelToken` can
 - `deploymentURL`
 
   The URL of the deployment.
+
+  Type: `string`
+
+- `originalDeploymentURL`
+
+  Original URL of the deployment. Can be used to create your own alias in a depending separate task.
 
   Type: `string`
 

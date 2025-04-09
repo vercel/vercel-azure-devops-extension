@@ -9,9 +9,9 @@
   "category": "Azure Pipelines",
   "author": "Vercel",
   "version": {
-    "Major": 1,
-    "Minor": 2,
-    "Patch": 5
+    "Major": 2,
+    "Minor": 0,
+    "Patch": 0
   },
   "instanceNameFormat": "Deploying $(vercelProject) to Vercel",
   "inputs": [
@@ -23,11 +23,11 @@
       "helpMarkDown": "The ID of your Vercel Project. Can also be set as the environment variable `VERCEL_PROJECT_ID`."
     },
     {
-      "name": "vercelOrgId",
+      "name": "vercelTeamId",
       "type": "string",
-      "label": "Vercel Org ID",
+      "label": "Vercel Team ID",
       "required": false,
-      "helpMarkDown": "The ID of your Vercel Org. Can also be set as the environment variable `VERCEL_ORG_ID`."
+      "helpMarkDown": "The ID of the Vercel Team your Vercel Project is associated with. Starts with `team_`. Can also be set as the environment variable `VERCEL_TEAM_ID`."
     },
     {
       "name": "vercelToken",
@@ -51,17 +51,64 @@
       "helpMarkDown": "Should the task deploy to production? Defaults to false"
     },
     {
+      "name": "target",
+      "type": "string",
+      "label": "Environment to deploy to",
+      "required": false,
+      "helpMarkDown": "Option to define the environment you want to deploy to. This could be production, preview, or a custom environment. For more information, see [Using an environment through the Vercel CLI](https://vercel.com/docs/deployments/custom-environments#using-an-environment-through-the-vercel-cli)."
+    },
+    {
       "name": "debug",
       "type": "boolean",
       "label": "Enable debug output",
       "required": false,
       "helpMarkDown": "Enable `--debug` output for the internal Vercel CLI operations."
+    },
+    {
+      "name": "archive",
+      "type": "boolean",
+      "label": "Enable compression of the deployment code into a single file before uploading it",
+      "required": false,
+      "helpMarkDown": "Enable `--archive=tgz` flag for the internal Vercel CLI operations."
+    },
+    {
+      "name": "env",
+      "type": "multiLine",
+      "properties": {
+        "resizable": true,
+        "rows": "2"
+      },
+      "label": "Env vars",
+      "required": false,
+      "helpMarkDown": "Additional environment variables to be provided at runtime. One line per env (e.g. KEY1=value1)."
+    },
+    {
+      "name": "buildEnv",
+      "type": "multiLine",
+      "properties": {
+        "resizable": true,
+        "rows": "2"
+      },
+      "label": "Build env vars",
+      "required": false,
+      "helpMarkDown": "Additional environment variables to be provided during build. One line per env (e.g. KEY1=value1)."
+    },
+    {
+      "name": "logs",
+      "type": "boolean",
+      "label": "Enable build log output in the pipeline",
+      "required": false,
+      "helpMarkDown": "Enable `--logs` flag for the internal Vercel CLI operations."
     }
   ],
   "outputVariables": [
     {
       "name": "deploymentURL",
       "description": "The URL of the deployment."
+    },
+    {
+      "name": "originalDeploymentURL",
+      "description": "Original URL of the deployment. Can be used to create your own alias in a separate task."
     },
     {
       "name": "deploymentTaskMessage",
