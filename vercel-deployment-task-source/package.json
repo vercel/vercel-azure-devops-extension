@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": "^16.0.0"
+    "node": "^20.0.0"
   },
   "dependencies": {
     "azure-devops-node-api": "12.0.0",
@@ -16,7 +16,7 @@
     "undici": "5.22.1"
   },
   "devDependencies": {
-    "@types/node": "16.18.24",
+    "@types/node": "^20.0.0",
     "@types/tap": "15.0.8",
     "tap": "16.3.4",
     "typescript": "5.0.4"
