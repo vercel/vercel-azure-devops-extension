@@ -6,14 +6,14 @@
   },
   "license": "MIT",
   "engines": {
-    "node": "^16.0.0"
+    "node": "^20.0.0"
   },
   "dependencies": {
     "azure-devops-node-api": "12.0.0",
     "azure-pipelines-task-lib": "4.3.1"
   },
   "devDependencies": {
-    "@types/node": "16.18.24",
+    "@types/node": "^20.0.0",
     "typescript": "5.0.4"
   }
 }
