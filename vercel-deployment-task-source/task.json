@@ -9,7 +9,7 @@
   "category": "Azure Pipelines",
   "author": "Vercel",
   "version": {
-    "Major": 3,
+    "Major": 4,
     "Minor": 0,
     "Patch": 0
   },
@@ -120,6 +120,9 @@
       "target": "dist/index.js"
     },
     "Node20_1": {
+      "target": "dist/index.js"
+    },
+    "Node22": {
       "target": "dist/index.js"
     }
   }
