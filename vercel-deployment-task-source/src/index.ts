@@ -151,6 +151,9 @@ async function run() {
       );
     }
 
+    // VERCEL_ORG_ID is still required internally
+    setVariable("VERCEL_ORG_ID", vercelTeamId);
+
     const vercelToken = reconcileConfigurationInput(
       "vercelToken",
       "VERCEL_TOKEN",
