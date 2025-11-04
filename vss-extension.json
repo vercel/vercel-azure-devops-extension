@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "vercel-deployment-extension",
   "name": "Vercel Deployment Extension",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "publisher": "Vercel",
   "public": true,
   "targets": [
