@@ -239,8 +239,17 @@ async function run() {
       );
     }
 
-    const originalDeployURL = stdout;
-    let deployURL = stdout;
+    let parsedDeployURL = stdout.trim();
+    try {
+      const parsed = JSON.parse(parsedDeployURL);
+      const url = parsed.deployment?.url;
+      if (url) {
+        parsedDeployURL = url.includes("://") ? url : `https://${url}`;
+      }
+    } catch {}
+
+    const originalDeployURL = parsedDeployURL;
+    let deployURL = parsedDeployURL;
 
     if (!deployToProduction) {
       // Get branch name
@@ -323,7 +332,7 @@ async function run() {
         vercel = tool(which("vercel", true));
         const vercelAliasArgs = [
           "alias",
-          stdout,
+          parsedDeployURL,
           aliasHostname,
           `--token=${vercelToken}`,
           `--scope=${vercelTeamId}`,
