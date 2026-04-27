@@ -16,6 +16,22 @@ function errorHandler(error: unknown) {
   setResult(TaskResult.Failed, `Unknown error thrown: ${error}`);
 }
 
+/**
+ * Defense-in-depth secret scrubbing for any text we are about to post as a
+ * pull request comment. The deployment task already redacts before writing
+ * `deploymentTaskMessage`, but we re-scrub here so future regressions or
+ * user-provided messages cannot leak Vercel tokens into PR threads.
+ */
+function redactSecrets(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/vcp_[A-Za-z0-9_-]+/g, "vcp_***")
+    .replace(/vca_[A-Za-z0-9_-]+/g, "vca_***")
+    .replace(/(--token[= ])[^\s"']+/g, "$1***")
+    .replace(/([?&]token=)[^\s&"']+/g, "$1***")
+    .replace(/(Bearer\s+)[A-Za-z0-9._-]+/gi, "$1***");
+}
+
 process.on("unhandledRejection", errorHandler);
 process.on("unhandledException", errorHandler);
 
@@ -23,7 +39,7 @@ async function run() {
   try {
     setResourcePath(path.join(__dirname, "..", "task.json"));
 
-    const message = getInput("deploymentTaskMessage", true)!;
+    const message = redactSecrets(getInput("deploymentTaskMessage", true)!);
 
     const buildReason = getVariable("Build.Reason");
     if (buildReason === "PullRequest") {
