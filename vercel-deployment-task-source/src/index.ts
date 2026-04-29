@@ -24,6 +24,33 @@ function isTeamID(teamId: string) {
   return teamId.startsWith("team_");
 }
 
+/**
+ * Mask Vercel tokens and Authorization headers anywhere they might appear in
+ * a string before it is logged, surfaced as an output variable, or posted as
+ * a PR comment. Newer Vercel CLI versions print follow-up commands that echo
+ * the `--token=...` value back, so anything sourced from CLI stdout/stderr
+ * must be passed through here.
+ */
+function redactSecrets(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/vcp_[A-Za-z0-9_-]+/g, "vcp_***")
+    .replace(/vca_[A-Za-z0-9_-]+/g, "vca_***")
+    .replace(/(--token[= ])[^\s"']+/g, "$1***")
+    .replace(/([?&]token=)[^\s&"']+/g, "$1***")
+    .replace(/(Bearer\s+)[A-Za-z0-9._-]+/gi, "$1***");
+}
+
+/**
+ * Pick the deployment URL out of `vercel deploy` stdout. The CLI may print
+ * additional lines (warnings, JSON-shaped follow-up hints), so we cannot use
+ * the entire stdout as the URL.
+ */
+function extractDeploymentURL(stdout: string): string {
+  const urlMatch = stdout.match(/https?:\/\/[^\s"']+/);
+  return urlMatch ? urlMatch[0] : "";
+}
+
 async function getStagingPrefix(teamId: string, token: string): Promise<string> {
   const { statusCode, body } = await request(`https://api.vercel.com/v2/teams/${teamId}`, {
     headers: {
@@ -84,7 +111,8 @@ function reconcileConfigurationInput(
   inputKey: string,
   envVarKey: string,
   name: string,
-  defaultValue?: string
+  defaultValue?: string,
+  secret = false
 ): string {
   const inputValue = getInput(inputKey);
   const envVarValue = getVariable(envVarKey);
@@ -96,7 +124,7 @@ function reconcileConfigurationInput(
   }
 
   if (inputValue) {
-    setVariable(envVarKey, inputValue);
+    setVariable(envVarKey, inputValue, secret);
     return inputValue;
   }
 
@@ -105,7 +133,7 @@ function reconcileConfigurationInput(
   }
 
   if (defaultValue) {
-    setVariable(envVarKey, defaultValue);
+    setVariable(envVarKey, defaultValue, secret);
     return defaultValue;
   }
 
@@ -157,7 +185,9 @@ async function run() {
     const vercelToken = reconcileConfigurationInput(
       "vercelToken",
       "VERCEL_TOKEN",
-      "Vercel Token"
+      "Vercel Token",
+      undefined,
+      true
     );
 
     const vercelCurrentWorkingDirectory = reconcileConfigurationInput(
@@ -186,7 +216,7 @@ async function run() {
 
     if (code !== 0) {
       throw new Error(
-        `npm install failed with exit code ${code}. Error: ${stderr}`
+        `npm install failed with exit code ${code}. Error: ${redactSecrets(stderr)}`
       );
     }
 
@@ -235,21 +265,18 @@ async function run() {
 
     if (code !== 0) {
       throw new Error(
-        `vercel deploy failed with exit code ${code}. Error: ${stderr}`
+        `vercel deploy failed with exit code ${code}. Error: ${redactSecrets(stderr)}`
       );
     }
 
-    let parsedDeployURL = stdout.trim();
-    try {
-      const parsed = JSON.parse(parsedDeployURL);
-      const url = parsed.deployment?.url;
-      if (url) {
-        parsedDeployURL = url.includes("://") ? url : `https://${url}`;
-      }
-    } catch {}
+    const originalDeployURL = extractDeploymentURL(stdout);
+    let deployURL = originalDeployURL;
 
-    const originalDeployURL = parsedDeployURL;
-    let deployURL = parsedDeployURL;
+    if (!originalDeployURL) {
+      throw new Error(
+        `vercel deploy did not return a deployment URL.`
+      );
+    }
 
     if (!deployToProduction) {
       // Get branch name
@@ -332,7 +359,7 @@ async function run() {
         vercel = tool(which("vercel", true));
         const vercelAliasArgs = [
           "alias",
-          parsedDeployURL,
+          originalDeployURL,
           aliasHostname,
           `--token=${vercelToken}`,
           `--scope=${vercelTeamId}`,
@@ -344,7 +371,7 @@ async function run() {
         ({ stdout, stderr, code } = vercelAlias.execSync());
         if (code !== 0) {
           throw new Error(
-            `vercel alias failed with exit code ${code}. Error: ${stderr}`
+            `vercel alias failed with exit code ${code}. Error: ${redactSecrets(stderr)}`
           );
         }
       } else {
@@ -356,7 +383,7 @@ async function run() {
 
     setVariable("originalDeploymentURL", originalDeployURL, false, true);
     setVariable("deploymentURL", deployURL, false, true);
-    const message = `Successfully deployed to ${deployURL}`;
+    const message = redactSecrets(`Successfully deployed to ${deployURL}`);
     setVariable("deploymentTaskMessage", message, false, true);
     console.log(message);
 
