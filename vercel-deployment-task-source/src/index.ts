@@ -227,6 +227,9 @@ async function run() {
       `--environment=${deployToProduction ? "production" : "preview"}`,
       `--token=${vercelToken}`,
     ];
+    if (vercelCurrentWorkingDirectory) {
+      vercelPullArgs.push(`--cwd=${vercelCurrentWorkingDirectory}`);
+    }
     if (debug) {
       vercelPullArgs.push("--debug");
     }
